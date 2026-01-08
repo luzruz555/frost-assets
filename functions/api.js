@@ -4,7 +4,7 @@ export async function onRequest(context) {
 
   // 색상
   const orange = '#D4743C';
-  const dimOrange = '#8B5A2B';
+  const dimOrange = '#9A6A4A';
 
   // 배경 이미지 URL
   const homeBg = 'https://raw.githubusercontent.com/luzruz555/frost-assets/refs/heads/main/home-bg.png';
@@ -38,19 +38,21 @@ export async function onRequest(context) {
         posts.push({
           type: parts[0] || 'g',
           title: parts[1] || '',
-          comments: parts[2] || '0'
+          author: parts[2] || '',
+          comments: parts[3] || '0'
         });
       }
     }
 
     // 게시물 Y 좌표 (4개 박스) - 1920x1080 기준
-    const boxY = [310, 440, 570, 700];
-    const titleY = boxY.map(y => y + 55);
-    const commentY = boxY.map(y => y + 55);
+    const boxY = [295, 425, 555, 685];
+    const titleY = boxY.map(y => y + 45);
+    const authorY = boxY.map(y => y + 85);
+    const commentY = boxY.map(y => y + 65);
 
     let postsHtml = '';
     for (let i = 0; i < 4; i++) {
-      const p = posts[i] || { type: 'g', title: '', comments: '0' };
+      const p = posts[i] || { type: 'g', title: '', author: '', comments: '0' };
       
       let prefix = '';
       let titleColor = orange;
@@ -63,8 +65,9 @@ export async function onRequest(context) {
       }
 
       postsHtml += `
-        <text x="65" y="${titleY[i]}" fill="${titleColor}" font-size="32" font-family="'Noto Sans KR', sans-serif" font-weight="700">${prefix}${p.title}</text>
-        <text x="1000" y="${commentY[i]}" fill="${orange}" font-size="28" font-family="'Noto Sans KR', sans-serif" text-anchor="middle">${p.comments}</text>
+        <text x="55" y="${titleY[i]}" fill="${titleColor}" font-size="38" font-family="'Noto Sans KR', sans-serif" font-weight="700">${prefix}${p.title}</text>
+        <text x="55" y="${authorY[i]}" fill="${dimOrange}" font-size="26" font-family="'Noto Sans KR', sans-serif">${p.author}</text>
+        <text x="985" y="${commentY[i]}" fill="${orange}" font-size="34" font-family="'Noto Sans KR', sans-serif" text-anchor="middle">${p.comments}</text>
       `;
     }
 
@@ -88,8 +91,6 @@ export async function onRequest(context) {
     const type = decodeURIComponent(url.searchParams.get('y') || 'g');
     const title = decodeURIComponent(url.searchParams.get('t') || '');
     const author = decodeURIComponent(url.searchParams.get('a') || '');
-    const views = decodeURIComponent(url.searchParams.get('v') || '0');
-    const likes = decodeURIComponent(url.searchParams.get('k') || '0');
     const content = decodeURIComponent(url.searchParams.get('c') || '');
     const repliesRaw = decodeURIComponent(url.searchParams.get('r') || '');
 
@@ -109,7 +110,7 @@ export async function onRequest(context) {
       let currentLine = '';
       let currentWidth = 0;
       for (const char of text) {
-        const charWidth = /[가-힣]/.test(char) ? 28 : 14;
+        const charWidth = /[가-힣]/.test(char) ? 32 : 18;
         if (currentWidth + charWidth > maxWidth) {
           lines.push(currentLine);
           currentLine = char;
@@ -124,10 +125,10 @@ export async function onRequest(context) {
     }
 
     // 왼쪽 본문 영역
-    const contentLines = wrapText(content, 820);
+    const contentLines = wrapText(content, 550);
     let contentHtml = '';
     for (let i = 0; i < contentLines.length; i++) {
-      contentHtml += `<text x="65" y="${380 + (i * 38)}" fill="${orange}" font-size="26" font-family="'Noto Sans KR', sans-serif">${contentLines[i]}</text>`;
+      contentHtml += `<text x="55" y="${305 + (i * 42)}" fill="${orange}" font-size="30" font-family="'Noto Sans KR', sans-serif">${contentLines[i]}</text>`;
     }
 
     // 오른쪽 댓글 영역
@@ -144,14 +145,14 @@ export async function onRequest(context) {
       }
     }
 
-    const replyStartY = 380;
+    const replyStartY = 305;
     let repliesHtml = '';
     for (let i = 0; i < replies.length; i++) {
       const r = replies[i];
       repliesHtml += `
-        <text x="940" y="${replyStartY + (i * 70)}" fill="${orange}" font-size="22" font-family="'Noto Sans KR', sans-serif" font-weight="700">${r.nick}</text>
-        <text x="940" y="${replyStartY + (i * 70) + 28}" fill="${dimOrange}" font-size="20" font-family="'Noto Sans KR', sans-serif">${r.text}</text>
-        <text x="1850" y="${replyStartY + (i * 70) + 14}" fill="${dimOrange}" font-size="18" font-family="'Noto Sans KR', sans-serif">[+${r.likes}]</text>
+        <text x="640" y="${replyStartY + (i * 80)}" fill="${orange}" font-size="26" font-family="'Noto Sans KR', sans-serif" font-weight="700">${r.nick}</text>
+        <text x="640" y="${replyStartY + (i * 80) + 35}" fill="${dimOrange}" font-size="24" font-family="'Noto Sans KR', sans-serif">${r.text}</text>
+        <text x="950" y="${replyStartY + (i * 80) + 18}" fill="${dimOrange}" font-size="22" font-family="'Noto Sans KR', sans-serif">[+${r.likes}]</text>
       `;
     }
 
@@ -167,8 +168,9 @@ export async function onRequest(context) {
         </defs>
         <image href="data:image/png;base64,${bgBase64}" width="1920" height="1080"/>
         
-        <!-- 제목 -->
-        <text x="65" y="340" fill="${titleColor}" font-size="34" font-family="'Noto Sans KR', sans-serif" font-weight="700">${prefix}${title}</text>
+        <!-- 제목 + 작성자 -->
+        <text x="55" y="215" fill="${titleColor}" font-size="38" font-family="'Noto Sans KR', sans-serif" font-weight="700">${prefix}${title}</text>
+        <text x="55" y="255" fill="${dimOrange}" font-size="26" font-family="'Noto Sans KR', sans-serif">${author}</text>
         
         <!-- 본문 (왼쪽) -->
         ${contentHtml}
