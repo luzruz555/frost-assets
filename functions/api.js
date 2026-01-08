@@ -110,7 +110,7 @@ export async function onRequest(context) {
       let currentLine = '';
       let currentWidth = 0;
       for (const char of text) {
-        const charWidth = /[가-힣]/.test(char) ? 32 : 18;
+        const charWidth = /[가-힣]/.test(char) ? 28 : 45;
         if (currentWidth + charWidth > maxWidth) {
           lines.push(currentLine);
           currentLine = char;
@@ -169,8 +169,8 @@ export async function onRequest(context) {
         <image href="data:image/png;base64,${bgBase64}" width="1920" height="1080"/>
         
         <!-- 제목 + 작성자 -->
-        <text x="85" y="440" fill="${titleColor}" font-size="35" font-family="'Noto Sans KR', sans-serif" font-weight="700">${prefix}${title}</text>
-        <text x="85" y="475" fill="${dimOrange}" font-size="25" font-family="'Noto Sans KR', sans-serif" font-weight="700">${author}</text>
+        <text x="85" y="445" fill="${titleColor}" font-size="35" font-family="'Noto Sans KR', sans-serif" font-weight="700">${prefix}${title}</text>
+        <text x="85" y="480" fill="${dimOrange}" font-size="25" font-family="'Noto Sans KR', sans-serif" font-weight="700">${author}</text>
         
         <!-- 본문 (왼쪽) -->
         ${contentHtml}
