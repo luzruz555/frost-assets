@@ -152,7 +152,7 @@ export async function onRequest(context) {
       repliesHtml += `
         <text x="1210" y="${replyStartY + (i * 90)}" fill="${orange}" font-size="34" font-family="'Noto Sans KR', sans-serif" font-weight="700">${r.nick}</text>
         <text x="1210" y="${replyStartY + (i * 90) + 42}" fill="${dimOrange}" font-size="32" font-family="'Noto Sans KR', sans-serif" font-weight="700">${r.text}</text>
-        <text x="1520" y="${replyStartY + (i * 90) + 22}" fill="${dimOrange}" font-size="28" font-family="'Noto Sans KR', sans-serif" font-weight="700">[+${r.likes}]</text>
+        <text x="1520" y="${replyStartY + (i * 90)}" fill="${dimOrange}" font-size="28" font-family="'Noto Sans KR', sans-serif" font-weight="700">[+${r.likes}]</text>
       `;
     }
 
@@ -169,8 +169,8 @@ export async function onRequest(context) {
         <image href="data:image/png;base64,${bgBase64}" width="1920" height="1080"/>
         
         <!-- 제목 + 작성자 -->
-        <text x="85" y="425" fill="${titleColor}" font-size="48" font-family="'Noto Sans KR', sans-serif" font-weight="700">${prefix}${title}</text>
-        <text x="85" y="460" fill="${dimOrange}" font-size="34" font-family="'Noto Sans KR', sans-serif" font-weight="700">${author}</text>
+        <text x="85" y="435" fill="${titleColor}" font-size="48" font-family="'Noto Sans KR', sans-serif" font-weight="700">${prefix}${title}</text>
+        <text x="85" y="470" fill="${dimOrange}" font-size="30" font-family="'Noto Sans KR', sans-serif" font-weight="700">${author}</text>
         
         <!-- 본문 (왼쪽) -->
         ${contentHtml}
