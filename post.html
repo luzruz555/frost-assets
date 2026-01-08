@@ -105,6 +105,7 @@
         .post-type.info { color: #4ade80; border-color: #4ade80; }
         .post-type.trade { color: #60a5fa; border-color: #60a5fa; }
         .post-type.help { color: #f472b6; border-color: #f472b6; }
+        .post-type.notice { color: #FFD700; border-color: #FFD700; background: rgba(255, 215, 0, 0.1); }
         
         .post-title {
             font-size: 18px;
@@ -427,10 +428,12 @@
                 document.getElementById('commentsSection').style.display = 'block';
                 
                 const typeLabel = { free: '자유', info: '정보', trade: '거래', help: '질문' };
+                const displayType = post.isNotice ? '공지' : (typeLabel[post.type] || post.type);
+                const typeClass = post.isNotice ? 'notice' : post.type;
                 
                 document.getElementById('postId').textContent = `[${postId.substring(0, 15)}...]`;
-                document.getElementById('postType').textContent = typeLabel[post.type] || post.type;
-                document.getElementById('postType').className = `post-type ${post.type}`;
+                document.getElementById('postType').textContent = displayType;
+                document.getElementById('postType').className = `post-type ${typeClass}`;
                 document.getElementById('postAuthor').textContent = post.author;
                 document.getElementById('postDate').textContent = formatDate(post.createdAt);
                 document.getElementById('postTitle').textContent = post.title;
