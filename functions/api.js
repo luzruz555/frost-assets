@@ -45,7 +45,7 @@ export async function onRequest(context) {
     }
 
     // 게시물 Y 좌표 (4개 박스) - 1920x1080 기준
-    const boxY = [380, 510, 640, 770];
+    const boxY = [425, 555, 685, 815];
     const titleY = boxY.map(y => y + 45);
     const authorY = boxY.map(y => y + 95);
     const commentY = boxY.map(y => y + 70);
@@ -65,9 +65,9 @@ export async function onRequest(context) {
       }
 
       postsHtml += `
-        <text x="55" y="${titleY[i]}" fill="${titleColor}" font-size="48" font-family="'Noto Sans KR', sans-serif" font-weight="700">${prefix}${p.title}</text>
-        <text x="55" y="${authorY[i]}" fill="${dimOrange}" font-size="34" font-family="'Noto Sans KR', sans-serif" font-weight="700">${p.author}</text>
-        <text x="1085" y="${commentY[i]}" fill="${orange}" font-size="44" font-family="'Noto Sans KR', sans-serif" font-weight="700" text-anchor="middle">${p.comments}</text>
+        <text x="85" y="${titleY[i]}" fill="${titleColor}" font-size="48" font-family="'Noto Sans KR', sans-serif" font-weight="700">${prefix}${p.title}</text>
+        <text x="85" y="${authorY[i]}" fill="${dimOrange}" font-size="34" font-family="'Noto Sans KR', sans-serif" font-weight="700">${p.author}</text>
+        <text x="1115" y="${commentY[i]}" fill="${orange}" font-size="44" font-family="'Noto Sans KR', sans-serif" font-weight="700" text-anchor="middle">${p.comments}</text>
       `;
     }
 
@@ -128,7 +128,7 @@ export async function onRequest(context) {
     const contentLines = wrapText(content, 520);
     let contentHtml = '';
     for (let i = 0; i < contentLines.length; i++) {
-      contentHtml += `<text x="55" y="${390 + (i * 50)}" fill="${orange}" font-size="38" font-family="'Noto Sans KR', sans-serif" font-weight="700">${contentLines[i]}</text>`;
+      contentHtml += `<text x="85" y="${425 + (i * 50)}" fill="${orange}" font-size="38" font-family="'Noto Sans KR', sans-serif" font-weight="700">${contentLines[i]}</text>`;
     }
 
     // 오른쪽 댓글 영역
@@ -150,9 +150,9 @@ export async function onRequest(context) {
     for (let i = 0; i < replies.length; i++) {
       const r = replies[i];
       repliesHtml += `
-        <text x="640" y="${replyStartY + (i * 90)}" fill="${orange}" font-size="34" font-family="'Noto Sans KR', sans-serif" font-weight="700">${r.nick}</text>
-        <text x="640" y="${replyStartY + (i * 90) + 42}" fill="${dimOrange}" font-size="32" font-family="'Noto Sans KR', sans-serif" font-weight="700">${r.text}</text>
-        <text x="950" y="${replyStartY + (i * 90) + 22}" fill="${dimOrange}" font-size="28" font-family="'Noto Sans KR', sans-serif" font-weight="700">[+${r.likes}]</text>
+        <text x="1200" y="${replyStartY + (i * 90)}" fill="${orange}" font-size="34" font-family="'Noto Sans KR', sans-serif" font-weight="700">${r.nick}</text>
+        <text x="1200" y="${replyStartY + (i * 90) + 42}" fill="${dimOrange}" font-size="32" font-family="'Noto Sans KR', sans-serif" font-weight="700">${r.text}</text>
+        <text x="1300" y="${replyStartY + (i * 90) + 22}" fill="${dimOrange}" font-size="28" font-family="'Noto Sans KR', sans-serif" font-weight="700">[+${r.likes}]</text>
       `;
     }
 
