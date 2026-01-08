@@ -48,7 +48,7 @@ export async function onRequest(context) {
     const boxY = [430, 590, 750, 910];
     const titleY = boxY.map(y => y + 45);
     const authorY = boxY.map(y => y + 95);
-    const commentY = boxY.map(y => y + 70);
+    const commentY = boxY.map(y => y + 65);
 
     let postsHtml = '';
     for (let i = 0; i < 4; i++) {
@@ -67,7 +67,7 @@ export async function onRequest(context) {
       postsHtml += `
         <text x="85" y="${titleY[i]}" fill="${titleColor}" font-size="40" font-family="'Noto Sans KR', sans-serif" font-weight="700">${prefix}${p.title}</text>
         <text x="85" y="${authorY[i]}" fill="${dimOrange}" font-size="28" font-family="'Noto Sans KR', sans-serif" font-weight="700">${p.author}</text>
-        <text x="1320" y="${commentY[i]}" fill="${orange}" font-size="38" font-family="'Noto Sans KR', sans-serif" font-weight="700" text-anchor="middle">${p.comments}</text>
+        <text x="1315" y="${commentY[i]}" fill="${orange}" font-size="35" font-family="'Noto Sans KR', sans-serif" font-weight="400" text-anchor="middle">${p.comments}</text>
       `;
     }
 
