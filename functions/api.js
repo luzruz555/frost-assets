@@ -125,10 +125,10 @@ export async function onRequest(context) {
     }
 
     // 왼쪽 본문 영역
-    const contentLines = wrapText(content, 1015);
+    const contentLines = wrapText(content, 1100);
     let contentHtml = '';
     for (let i = 0; i < contentLines.length; i++) {
-      contentHtml += `<text x="85" y="${530 + (i * 50)}" fill="${orange}" font-size="28" font-family="'Noto Sans KR', sans-serif" font-weight="700">${contentLines[i]}</text>`;
+      contentHtml += `<text x="85" y="${530 + (i * 50)}" fill="${dimOrange}" font-size="32" font-family="'Noto Sans KR', sans-serif" font-weight="700">${contentLines[i]}</text>`;
     }
 
     // 오른쪽 댓글 영역
