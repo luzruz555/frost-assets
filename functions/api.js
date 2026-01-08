@@ -44,10 +44,10 @@ export async function onRequest(context) {
       }
     }
 
-    // 게시물 Y 좌표 (4개 박스) - 1920x1080 기준
-    const boxY = [295, 425, 555, 685];
+    // 게시물 Y 좌표 (4개 박스) - 1920x1080 기준, +45
+    const boxY = [340, 470, 600, 730];
     const titleY = boxY.map(y => y + 45);
-    const authorY = boxY.map(y => y + 85);
+    const authorY = boxY.map(y => y + 90);
     const commentY = boxY.map(y => y + 65);
 
     let postsHtml = '';
@@ -65,9 +65,9 @@ export async function onRequest(context) {
       }
 
       postsHtml += `
-        <text x="55" y="${titleY[i]}" fill="${titleColor}" font-size="38" font-family="'Noto Sans KR', sans-serif" font-weight="700">${prefix}${p.title}</text>
-        <text x="55" y="${authorY[i]}" fill="${dimOrange}" font-size="26" font-family="'Noto Sans KR', sans-serif">${p.author}</text>
-        <text x="985" y="${commentY[i]}" fill="${orange}" font-size="34" font-family="'Noto Sans KR', sans-serif" text-anchor="middle">${p.comments}</text>
+        <text x="55" y="${titleY[i]}" fill="${titleColor}" font-size="44" font-family="'Noto Sans KR', sans-serif" font-weight="700">${prefix}${p.title}</text>
+        <text x="55" y="${authorY[i]}" fill="${dimOrange}" font-size="30" font-family="'Noto Sans KR', sans-serif">${p.author}</text>
+        <text x="1085" y="${commentY[i]}" fill="${orange}" font-size="40" font-family="'Noto Sans KR', sans-serif" text-anchor="middle">${p.comments}</text>
       `;
     }
 
@@ -128,7 +128,7 @@ export async function onRequest(context) {
     const contentLines = wrapText(content, 550);
     let contentHtml = '';
     for (let i = 0; i < contentLines.length; i++) {
-      contentHtml += `<text x="55" y="${305 + (i * 42)}" fill="${orange}" font-size="30" font-family="'Noto Sans KR', sans-serif">${contentLines[i]}</text>`;
+      contentHtml += `<text x="55" y="${350 + (i * 46)}" fill="${orange}" font-size="34" font-family="'Noto Sans KR', sans-serif">${contentLines[i]}</text>`;
     }
 
     // 오른쪽 댓글 영역
@@ -145,14 +145,14 @@ export async function onRequest(context) {
       }
     }
 
-    const replyStartY = 305;
+    const replyStartY = 350;
     let repliesHtml = '';
     for (let i = 0; i < replies.length; i++) {
       const r = replies[i];
       repliesHtml += `
-        <text x="640" y="${replyStartY + (i * 80)}" fill="${orange}" font-size="26" font-family="'Noto Sans KR', sans-serif" font-weight="700">${r.nick}</text>
-        <text x="640" y="${replyStartY + (i * 80) + 35}" fill="${dimOrange}" font-size="24" font-family="'Noto Sans KR', sans-serif">${r.text}</text>
-        <text x="950" y="${replyStartY + (i * 80) + 18}" fill="${dimOrange}" font-size="22" font-family="'Noto Sans KR', sans-serif">[+${r.likes}]</text>
+        <text x="640" y="${replyStartY + (i * 85)}" fill="${orange}" font-size="30" font-family="'Noto Sans KR', sans-serif" font-weight="700">${r.nick}</text>
+        <text x="640" y="${replyStartY + (i * 85) + 38}" fill="${dimOrange}" font-size="28" font-family="'Noto Sans KR', sans-serif">${r.text}</text>
+        <text x="950" y="${replyStartY + (i * 85) + 20}" fill="${dimOrange}" font-size="26" font-family="'Noto Sans KR', sans-serif">[+${r.likes}]</text>
       `;
     }
 
@@ -169,8 +169,8 @@ export async function onRequest(context) {
         <image href="data:image/png;base64,${bgBase64}" width="1920" height="1080"/>
         
         <!-- 제목 + 작성자 -->
-        <text x="55" y="215" fill="${titleColor}" font-size="38" font-family="'Noto Sans KR', sans-serif" font-weight="700">${prefix}${title}</text>
-        <text x="55" y="255" fill="${dimOrange}" font-size="26" font-family="'Noto Sans KR', sans-serif">${author}</text>
+        <text x="55" y="260" fill="${titleColor}" font-size="44" font-family="'Noto Sans KR', sans-serif" font-weight="700">${prefix}${title}</text>
+        <text x="55" y="305" fill="${dimOrange}" font-size="30" font-family="'Noto Sans KR', sans-serif">${author}</text>
         
         <!-- 본문 (왼쪽) -->
         ${contentHtml}
