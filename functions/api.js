@@ -27,34 +27,30 @@ export async function onRequest(context) {
   let svg = '';
 
   if (mode === 'h') {
-    // ========== 홈 (목록) ==========
+    // ========== 홈 (목록) - 4개 ==========
     const listRaw = decodeURIComponent(url.searchParams.get('l') || '');
     const posts = [];
 
     if (listRaw) {
       const items = listRaw.split('/./');
-      for (let i = 0; i < Math.min(items.length, 5); i++) {
+      for (let i = 0; i < Math.min(items.length, 4); i++) {
         const parts = items[i].split('|');
         posts.push({
           type: parts[0] || 'g',
           title: parts[1] || '',
-          author: parts[2] || '',
-          comments: parts[3] || '0',
-          likes: parts[4] || '0',
-          views: parts[5] || '0'
+          comments: parts[2] || '0'
         });
       }
     }
 
-    // 게시물 Y 좌표 (5개 박스) - 1024x1024 기준
-    const boxStartY = [258, 388, 518, 648, 778];
-    const titleY = boxStartY.map(y => y + 38);
-    const metaY = boxStartY.map(y => y + 95);
-    const commentY = boxStartY.map(y => y + 65);
+    // 게시물 Y 좌표 (4개 박스) - 1920x1080 기준
+    const boxY = [310, 440, 570, 700];
+    const titleY = boxY.map(y => y + 55);
+    const commentY = boxY.map(y => y + 55);
 
     let postsHtml = '';
-    for (let i = 0; i < 5; i++) {
-      const p = posts[i] || { type: 'g', title: '', author: '', comments: '0', likes: '0', views: '0' };
+    for (let i = 0; i < 4; i++) {
+      const p = posts[i] || { type: 'g', title: '', comments: '0' };
       
       let prefix = '';
       let titleColor = orange;
@@ -67,11 +63,8 @@ export async function onRequest(context) {
       }
 
       postsHtml += `
-        <text x="50" y="${titleY[i]}" fill="${titleColor}" font-size="28" font-family="'Noto Sans KR', sans-serif" font-weight="700">${prefix}${p.title}</text>
-        <text x="50" y="${metaY[i]}" fill="${dimOrange}" font-size="20" font-family="'Noto Sans KR', sans-serif">작성자: ${p.author}</text>
-        <text x="280" y="${metaY[i]}" fill="${dimOrange}" font-size="20" font-family="'Noto Sans KR', sans-serif">조회수: ${p.views}</text>
-        <text x="470" y="${metaY[i]}" fill="${dimOrange}" font-size="20" font-family="'Noto Sans KR', sans-serif">추천: ${p.likes}</text>
-        <text x="928" y="${commentY[i]}" fill="${orange}" font-size="24" font-family="'Noto Sans KR', sans-serif" text-anchor="middle">${p.comments}</text>
+        <text x="65" y="${titleY[i]}" fill="${titleColor}" font-size="32" font-family="'Noto Sans KR', sans-serif" font-weight="700">${prefix}${p.title}</text>
+        <text x="1000" y="${commentY[i]}" fill="${orange}" font-size="28" font-family="'Noto Sans KR', sans-serif" text-anchor="middle">${p.comments}</text>
       `;
     }
 
@@ -79,13 +72,13 @@ export async function onRequest(context) {
     const bgBase64 = await loadImageBase64(homeBg);
 
     svg = `
-      <svg width="1024" height="1024" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg">
+      <svg width="1920" height="1080" viewBox="0 0 1920 1080" xmlns="http://www.w3.org/2000/svg">
         <defs>
           <style>
             @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700&amp;display=swap');
           </style>
         </defs>
-        <image href="data:image/png;base64,${bgBase64}" width="1024" height="1024"/>
+        <image href="data:image/png;base64,${bgBase64}" width="1920" height="1080"/>
         ${postsHtml}
       </svg>
     `;
@@ -95,7 +88,6 @@ export async function onRequest(context) {
     const type = decodeURIComponent(url.searchParams.get('y') || 'g');
     const title = decodeURIComponent(url.searchParams.get('t') || '');
     const author = decodeURIComponent(url.searchParams.get('a') || '');
-    const date = decodeURIComponent(url.searchParams.get('d') || '');
     const views = decodeURIComponent(url.searchParams.get('v') || '0');
     const likes = decodeURIComponent(url.searchParams.get('k') || '0');
     const content = decodeURIComponent(url.searchParams.get('c') || '');
@@ -117,7 +109,7 @@ export async function onRequest(context) {
       let currentLine = '';
       let currentWidth = 0;
       for (const char of text) {
-        const charWidth = /[가-힣]/.test(char) ? 26 : 14;
+        const charWidth = /[가-힣]/.test(char) ? 28 : 14;
         if (currentWidth + charWidth > maxWidth) {
           lines.push(currentLine);
           currentLine = char;
@@ -131,17 +123,18 @@ export async function onRequest(context) {
       return lines;
     }
 
-    const contentLines = wrapText(content, 900);
+    // 왼쪽 본문 영역
+    const contentLines = wrapText(content, 820);
     let contentHtml = '';
     for (let i = 0; i < contentLines.length; i++) {
-      contentHtml += `<text x="50" y="${310 + (i * 36)}" fill="${orange}" font-size="24" font-family="'Noto Sans KR', sans-serif">${contentLines[i]}</text>`;
+      contentHtml += `<text x="65" y="${380 + (i * 38)}" fill="${orange}" font-size="26" font-family="'Noto Sans KR', sans-serif">${contentLines[i]}</text>`;
     }
 
-    // 댓글 파싱
+    // 오른쪽 댓글 영역
     const replies = [];
     if (repliesRaw) {
       const items = repliesRaw.split('/./');
-      for (let i = 0; i < Math.min(items.length, 5); i++) {
+      for (let i = 0; i < Math.min(items.length, 6); i++) {
         const parts = items[i].split('|');
         replies.push({
           nick: parts[0] || '',
@@ -151,14 +144,14 @@ export async function onRequest(context) {
       }
     }
 
-    const replyStartY = 810;
+    const replyStartY = 380;
     let repliesHtml = '';
     for (let i = 0; i < replies.length; i++) {
       const r = replies[i];
       repliesHtml += `
-        <text x="50" y="${replyStartY + (i * 55)}" fill="${orange}" font-size="20" font-family="'Noto Sans KR', sans-serif" font-weight="700">${r.nick}</text>
-        <text x="50" y="${replyStartY + (i * 55) + 26}" fill="${dimOrange}" font-size="18" font-family="'Noto Sans KR', sans-serif">${r.text}</text>
-        <text x="940" y="${replyStartY + (i * 55) + 13}" fill="${dimOrange}" font-size="16" font-family="'Noto Sans KR', sans-serif">[+${r.likes}]</text>
+        <text x="940" y="${replyStartY + (i * 70)}" fill="${orange}" font-size="22" font-family="'Noto Sans KR', sans-serif" font-weight="700">${r.nick}</text>
+        <text x="940" y="${replyStartY + (i * 70) + 28}" fill="${dimOrange}" font-size="20" font-family="'Noto Sans KR', sans-serif">${r.text}</text>
+        <text x="1850" y="${replyStartY + (i * 70) + 14}" fill="${dimOrange}" font-size="18" font-family="'Noto Sans KR', sans-serif">[+${r.likes}]</text>
       `;
     }
 
@@ -166,26 +159,21 @@ export async function onRequest(context) {
     const bgBase64 = await loadImageBase64(postBg);
 
     svg = `
-      <svg width="1024" height="1024" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg">
+      <svg width="1920" height="1080" viewBox="0 0 1920 1080" xmlns="http://www.w3.org/2000/svg">
         <defs>
           <style>
             @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700&amp;display=swap');
           </style>
         </defs>
-        <image href="data:image/png;base64,${bgBase64}" width="1024" height="1024"/>
+        <image href="data:image/png;base64,${bgBase64}" width="1920" height="1080"/>
         
         <!-- 제목 -->
-        <text x="50" y="275" fill="${titleColor}" font-size="30" font-family="'Noto Sans KR', sans-serif" font-weight="700">${prefix}${title}</text>
+        <text x="65" y="340" fill="${titleColor}" font-size="34" font-family="'Noto Sans KR', sans-serif" font-weight="700">${prefix}${title}</text>
         
-        <!-- 본문 -->
+        <!-- 본문 (왼쪽) -->
         ${contentHtml}
         
-        <!-- 메타 (본문 아래 선 위) -->
-        <text x="50" y="735" fill="${dimOrange}" font-size="20" font-family="'Noto Sans KR', sans-serif">작성자: ${author}</text>
-        <text x="280" y="735" fill="${dimOrange}" font-size="20" font-family="'Noto Sans KR', sans-serif">조회수: ${views}</text>
-        <text x="470" y="735" fill="${dimOrange}" font-size="20" font-family="'Noto Sans KR', sans-serif">추천: ${likes}</text>
-        
-        <!-- 댓글 -->
+        <!-- 댓글 (오른쪽) -->
         ${repliesHtml}
       </svg>
     `;
