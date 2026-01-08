@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FROST_COMMUNITY // 지상 네트워크</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;700&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'IBM Plex Mono', monospace;
+            background-color: #0a0a0a;
+            color: #D4743C;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+        
+        .header {
+            border: 2px solid #D4743C;
+            padding: 15px 20px;
+            margin-bottom: 20px;
+        }
+        
+        .header h1 {
+            font-size: 14px;
+            font-weight: 500;
+        }
+        
+        .header .path {
+            color: #888;
+            font-size: 12px;
+            margin-top: 5px;
+        }
+        
+        .nav {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .nav a {
+            color: #D4743C;
+            text-decoration: none;
+            padding: 8px 15px;
+            border: 1px solid #333;
+            font-size: 12px;
+            transition: all 0.2s;
+        }
+        
+        .nav a:hover, .nav a.active {
+            border-color: #D4743C;
+            background: rgba(212, 116, 60, 0.1);
+        }
+        
+        .terminal {
+            border: 2px solid #D4743C;
+            background: #0d0d0d;
+        }
+        
+        .terminal-header {
+            background: #D4743C;
+            color: #0a0a0a;
+            padding: 8px 15px;
+            font-size: 12px;
+            display: flex;
+            justify-content: space-between;
+        }
+        
+        .terminal-body {
+            padding: 15px;
+        }
+        
+        .post-list {
+            list-style: none;
+        }
+        
+        .post-item {
+            display: grid;
+            grid-template-columns: 60px 1fr 100px 60px;
+            gap: 15px;
+            padding: 12px 10px;
+            border-bottom: 1px solid #222;
+            align-items: center;
+            transition: background 0.2s;
+            cursor: pointer;
+        }
+        
+        .post-item:hover {
+            background: rgba(212, 116, 60, 0.05);
+        }
+        
+        .post-type {
+            font-size: 11px;
+            padding: 3px 8px;
+            border: 1px solid;
+            text-align: center;
+        }
+        
+        .post-type.free { color: #888; border-color: #888; }
+        .post-type.info { color: #4ade80; border-color: #4ade80; }
+        .post-type.trade { color: #60a5fa; border-color: #60a5fa; }
+        .post-type.help { color: #f472b6; border-color: #f472b6; }
+        
+        .post-title {
+            font-size: 13px;
+            color: #ccc;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        .post-title:hover {
+            color: #D4743C;
+        }
+        
+        .post-author {
+            font-size: 11px;
+            color: #666;
+            text-align: right;
+        }
+        
+        .post-comments {
+            font-size: 11px;
+            color: #D4743C;
+            text-align: center;
+        }
+        
+        .empty-message {
+            text-align: center;
+            padding: 50px;
+            color: #666;
+            font-size: 12px;
+        }
+        
+        .pagination {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        
+        .pagination button {
+            background: transparent;
+            border: 1px solid #333;
+            color: #D4743C;
+            padding: 8px 15px;
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .pagination button:hover:not(:disabled) {
+            border-color: #D4743C;
+        }
+        
+        .pagination button:disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+        }
+        
+        .pagination span {
+            padding: 8px 15px;
+            font-size: 12px;
+        }
+        
+        .write-btn {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: #D4743C;
+            color: #0a0a0a;
+            border: none;
+            padding: 15px 20px;
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .write-btn:hover {
+            background: #e8854a;
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 50px;
+            color: #666;
+        }
+        
+        @keyframes blink {
+            0%, 50% { opacity: 1; }
+            51%, 100% { opacity: 0; }
+        }
+        
+        .blink {
+            animation: blink 1s infinite;
+        }
+        
+        @media (max-width: 600px) {
+            .post-item {
+                grid-template-columns: 50px 1fr 50px;
+            }
+            .post-author {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>FROST_COMMUNITY v2.1.7 // SURFACE_NETWORK</h1>
+            <div class="path">C:\FROST\COMMUNITY\HOME\</div>
+        </div>
+        
+        <nav class="nav">
+            <a href="#" class="active" data-type="">전체</a>
+            <a href="#" data-type="free">자유</a>
+            <a href="#" data-type="info">정보</a>
+            <a href="#" data-type="trade">거래</a>
+            <a href="#" data-type="help">질문</a>
+        </nav>
+        
+        <div class="terminal">
+            <div class="terminal-header">
+                <span>POST_LIST.exe</span>
+                <span id="postCount">[0 ENTRIES]</span>
+            </div>
+            <div class="terminal-body">
+                <div class="loading" id="loading">LOADING<span class="blink">_</span></div>
+                <ul class="post-list" id="postList"></ul>
+                <div class="empty-message" id="emptyMessage" style="display:none;">
+                    등록된 글이 없습니다.<br>
+                    첫 번째 글을 작성해보세요.
+                </div>
+            </div>
+        </div>
+        
+        <div class="pagination" id="pagination" style="display:none;">
+            <button id="prevBtn" onclick="changePage(-1)">[ PREV ]</button>
+            <span id="pageInfo">1 / 1</span>
+            <button id="nextBtn" onclick="changePage(1)">[ NEXT ]</button>
+        </div>
+    </div>
+    
+    <button class="write-btn" onclick="location.href='write.html'">[ NEW_POST ]</button>
+    
+    <script>
+        const API_URL = 'https://frostc.pages.dev';
+        let currentPage = 1;
+        let totalPages = 1;
+        let currentType = '';
+        
+        // 카테고리 필터
+        document.querySelectorAll('.nav a').forEach(link => {
+            link.addEventListener('click', (e) => {
+                e.preventDefault();
+                document.querySelectorAll('.nav a').forEach(l => l.classList.remove('active'));
+                link.classList.add('active');
+                currentType = link.dataset.type;
+                currentPage = 1;
+                loadPosts();
+            });
+        });
+        
+        // 글 목록 로드
+        async function loadPosts() {
+            const loading = document.getElementById('loading');
+            const postList = document.getElementById('postList');
+            const emptyMessage = document.getElementById('emptyMessage');
+            const pagination = document.getElementById('pagination');
+            
+            loading.style.display = 'block';
+            postList.innerHTML = '';
+            emptyMessage.style.display = 'none';
+            
+            try {
+                let url = `${API_URL}/api/posts?page=${currentPage}&limit=15`;
+                if (currentType) url += `&type=${currentType}`;
+                
+                const response = await fetch(url);
+                const data = await response.json();
+                
+                loading.style.display = 'none';
+                
+                if (data.posts.length === 0) {
+                    emptyMessage.style.display = 'block';
+                    pagination.style.display = 'none';
+                    document.getElementById('postCount').textContent = '[0 ENTRIES]';
+                    return;
+                }
+                
+                totalPages = data.totalPages;
+                document.getElementById('postCount').textContent = `[${data.total} ENTRIES]`;
+                document.getElementById('pageInfo').textContent = `${currentPage} / ${totalPages}`;
+                document.getElementById('prevBtn').disabled = currentPage <= 1;
+                document.getElementById('nextBtn').disabled = currentPage >= totalPages;
+                pagination.style.display = totalPages > 1 ? 'flex' : 'none';
+                
+                data.posts.forEach(post => {
+                    const li = document.createElement('li');
+                    li.className = 'post-item';
+                    li.onclick = () => location.href = `post.html?id=${post.id}`;
+                    
+                    const typeLabel = { free: '자유', info: '정보', trade: '거래', help: '질문' };
+                    
+                    li.innerHTML = `
+                        <span class="post-type ${post.type}">${typeLabel[post.type] || post.type}</span>
+                        <span class="post-title">${escapeHtml(post.title)}</span>
+                        <span class="post-author">${escapeHtml(post.author)}</span>
+                        <span class="post-comments">[${post.commentCount || 0}]</span>
+                    `;
+                    
+                    postList.appendChild(li);
+                });
+                
+            } catch (error) {
+                console.error('Error:', error);
+                loading.innerHTML = 'ERROR: 데이터를 불러올 수 없습니다.';
+            }
+        }
+        
+        function changePage(delta) {
+            currentPage += delta;
+            loadPosts();
+        }
+        
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+        
+        // 초기 로드
+        loadPosts();
+    </script>
+</body>
+</html>
