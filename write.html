@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FROST_COMMUNITY // 글 작성</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;700&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'IBM Plex Mono', monospace;
+            background-color: #0a0a0a;
+            color: #D4743C;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .header {
+            border: 2px solid #D4743C;
+            padding: 15px 20px;
+            margin-bottom: 20px;
+        }
+        
+        .header h1 {
+            font-size: 14px;
+            font-weight: 500;
+        }
+        
+        .header .path {
+            color: #888;
+            font-size: 12px;
+            margin-top: 5px;
+        }
+        
+        .terminal {
+            border: 2px solid #D4743C;
+            background: #0d0d0d;
+        }
+        
+        .terminal-header {
+            background: #D4743C;
+            color: #0a0a0a;
+            padding: 8px 15px;
+            font-size: 12px;
+            display: flex;
+            justify-content: space-between;
+        }
+        
+        .terminal-body {
+            padding: 20px;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 12px;
+        }
+        
+        .form-group label::before {
+            content: '> ';
+            color: #888;
+        }
+        
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            background: #1a1a1a;
+            border: 1px solid #333;
+            color: #D4743C;
+            padding: 12px;
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 14px;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+        
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            border-color: #D4743C;
+        }
+        
+        .form-group select {
+            cursor: pointer;
+        }
+        
+        .form-group select option {
+            background: #1a1a1a;
+            color: #D4743C;
+        }
+        
+        .form-group textarea {
+            min-height: 200px;
+            resize: vertical;
+        }
+        
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+        
+        @media (max-width: 600px) {
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        .char-count {
+            text-align: right;
+            font-size: 11px;
+            color: #666;
+            margin-top: 5px;
+        }
+        
+        .char-count.warning {
+            color: #ff6b6b;
+        }
+        
+        .submit-btn {
+            width: 100%;
+            background: transparent;
+            border: 2px solid #D4743C;
+            color: #D4743C;
+            padding: 15px;
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+        
+        .submit-btn:hover:not(:disabled) {
+            background: #D4743C;
+            color: #0a0a0a;
+        }
+        
+        .submit-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        .notice {
+            margin-top: 20px;
+            padding: 15px;
+            border: 1px dashed #333;
+            font-size: 11px;
+            color: #666;
+            line-height: 1.6;
+        }
+        
+        .notice::before {
+            content: '[SYSTEM NOTICE]';
+            display: block;
+            color: #D4743C;
+            margin-bottom: 10px;
+        }
+        
+        /* 결과 모달 */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.9);
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+        
+        .modal.active {
+            display: flex;
+        }
+        
+        .modal-content {
+            border: 2px solid #D4743C;
+            background: #0d0d0d;
+            padding: 30px;
+            max-width: 400px;
+            text-align: center;
+        }
+        
+        .modal-content.success {
+            border-color: #4ade80;
+        }
+        
+        .modal-content.success .modal-icon {
+            color: #4ade80;
+        }
+        
+        .modal-content.error {
+            border-color: #ff6b6b;
+        }
+        
+        .modal-content.error .modal-icon {
+            color: #ff6b6b;
+        }
+        
+        .modal-icon {
+            font-size: 48px;
+            margin-bottom: 20px;
+        }
+        
+        .modal-message {
+            font-size: 14px;
+            margin-bottom: 20px;
+            line-height: 1.6;
+        }
+        
+        .modal-btn {
+            background: transparent;
+            border: 1px solid #D4743C;
+            color: #D4743C;
+            padding: 10px 30px;
+            font-family: 'IBM Plex Mono', monospace;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .modal-btn:hover {
+            background: #D4743C;
+            color: #0a0a0a;
+        }
+        
+        /* 로딩 */
+        .loading {
+            display: none;
+        }
+        
+        .submit-btn.loading .loading {
+            display: inline;
+        }
+        
+        .submit-btn.loading .text {
+            display: none;
+        }
+        
+        @keyframes blink {
+            0%, 50% { opacity: 1; }
+            51%, 100% { opacity: 0; }
+        }
+        
+        .blink {
+            animation: blink 1s infinite;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>FROST_COMMUNITY v2.1.7 // POST_SUBMISSION_MODULE</h1>
+            <div class="path">C:\FROST\COMMUNITY\WRITE\</div>
+        </div>
+        
+        <div class="terminal">
+            <div class="terminal-header">
+                <span>NEW_POST.exe</span>
+                <span>[ - ] [ □ ] [ × ]</span>
+            </div>
+            <div class="terminal-body">
+                <form id="postForm">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="type">CATEGORY_SELECT</label>
+                            <select id="type" name="type" required>
+                                <option value="">-- 선택 --</option>
+                                <option value="free">자유</option>
+                                <option value="info">정보</option>
+                                <option value="trade">거래</option>
+                                <option value="help">질문</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="author">USER_ALIAS</label>
+                            <input type="text" id="author" name="author" placeholder="닉네임" maxlength="20" required>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="title">POST_TITLE</label>
+                        <input type="text" id="title" name="title" placeholder="제목을 입력하세요" maxlength="50" required>
+                        <div class="char-count"><span id="titleCount">0</span>/50</div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="content">POST_CONTENT</label>
+                        <textarea id="content" name="content" placeholder="내용을 입력하세요..." maxlength="2000" required></textarea>
+                        <div class="char-count"><span id="contentCount">0</span>/2000</div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="password">DELETE_KEY</label>
+                        <input type="password" id="password" name="password" placeholder="글 삭제용 비밀번호" maxlength="20" required>
+                    </div>
+                    
+                    <button type="submit" class="submit-btn" id="submitBtn">
+                        <span class="text">[ SUBMIT_POST ]</span>
+                        <span class="loading">PROCESSING<span class="blink">_</span></span>
+                    </button>
+                </form>
+                
+                <div class="notice">
+                    - 작성된 글은 관리자 승인 후 게시됩니다.<br>
+                    - 지상 주민만 이용 가능합니다.<br>
+                    - 지하 관련 정보 유출 시 계정이 정지됩니다.<br>
+                    - 비밀번호는 글 삭제 시 필요합니다.
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 결과 모달 -->
+    <div class="modal" id="resultModal">
+        <div class="modal-content" id="modalContent">
+            <div class="modal-icon" id="modalIcon"></div>
+            <div class="modal-message" id="modalMessage"></div>
+            <button class="modal-btn" onclick="closeModal()">[ CONFIRM ]</button>
+        </div>
+    </div>
+    
+    <script>
+        // API 엔드포인트 (Render 배포 후 변경)
+        const API_URL = 'https://your-render-app.onrender.com';
+        
+        // 글자 수 카운터
+        document.getElementById('title').addEventListener('input', function() {
+            const count = this.value.length;
+            const counter = document.getElementById('titleCount');
+            counter.textContent = count;
+            counter.parentElement.classList.toggle('warning', count > 45);
+        });
+        
+        document.getElementById('content').addEventListener('input', function() {
+            const count = this.value.length;
+            const counter = document.getElementById('contentCount');
+            counter.textContent = count;
+            counter.parentElement.classList.toggle('warning', count > 1800);
+        });
+        
+        // 폼 제출
+        document.getElementById('postForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const btn = document.getElementById('submitBtn');
+            btn.classList.add('loading');
+            btn.disabled = true;
+            
+            const formData = {
+                type: document.getElementById('type').value,
+                title: document.getElementById('title').value,
+                author: document.getElementById('author').value,
+                content: document.getElementById('content').value,
+                password: document.getElementById('password').value
+            };
+            
+            try {
+                const response = await fetch(`${API_URL}/submit`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(formData)
+                });
+                
+                const result = await response.json();
+                
+                if (response.ok) {
+                    showModal('success', '✓', result.message || '글이 제출되었습니다.\n관리자 승인을 기다려주세요.');
+                    this.reset();
+                    document.getElementById('titleCount').textContent = '0';
+                    document.getElementById('contentCount').textContent = '0';
+                } else {
+                    showModal('error', '✕', result.error || '오류가 발생했습니다.');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                showModal('error', '✕', '서버 연결에 실패했습니다.\n잠시 후 다시 시도해주세요.');
+            } finally {
+                btn.classList.remove('loading');
+                btn.disabled = false;
+            }
+        });
+        
+        // 모달 표시
+        function showModal(type, icon, message) {
+            const modal = document.getElementById('resultModal');
+            const content = document.getElementById('modalContent');
+            const iconEl = document.getElementById('modalIcon');
+            const messageEl = document.getElementById('modalMessage');
+            
+            content.className = 'modal-content ' + type;
+            iconEl.textContent = icon;
+            messageEl.textContent = message;
+            modal.classList.add('active');
+        }
+        
+        function closeModal() {
+            document.getElementById('resultModal').classList.remove('active');
+        }
+        
+        // ESC로 모달 닫기
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') closeModal();
+        });
+    </script>
+</body>
+</html>
