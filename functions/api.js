@@ -65,9 +65,9 @@ export async function onRequest(context) {
       }
 
       postsHtml += `
-        <text x="85" y="${titleY[i]}" fill="${titleColor}" font-size="48" font-family="'Noto Sans KR', sans-serif" font-weight="700">${prefix}${p.title}</text>
-        <text x="85" y="${authorY[i]}" fill="${dimOrange}" font-size="34" font-family="'Noto Sans KR', sans-serif" font-weight="700">${p.author}</text>
-        <text x="1285" y="${commentY[i]}" fill="${orange}" font-size="44" font-family="'Noto Sans KR', sans-serif" font-weight="700" text-anchor="middle">${p.comments}</text>
+        <text x="85" y="${titleY[i]}" fill="${titleColor}" font-size="45" font-family="'Noto Sans KR', sans-serif" font-weight="700">${prefix}${p.title}</text>
+        <text x="85" y="${authorY[i]}" fill="${dimOrange}" font-size="30" font-family="'Noto Sans KR', sans-serif" font-weight="700">${p.author}</text>
+        <text x="1295" y="${commentY[i]}" fill="${orange}" font-size="40" font-family="'Noto Sans KR', sans-serif" font-weight="700" text-anchor="middle">${p.comments}</text>
       `;
     }
 
@@ -110,7 +110,7 @@ export async function onRequest(context) {
       let currentLine = '';
       let currentWidth = 0;
       for (const char of text) {
-        const charWidth = /[가-힣]/.test(char) ? 28 : 45;
+        const charWidth = /[가-힣]/.test(char) ? 28 : 18;
         if (currentWidth + charWidth > maxWidth) {
           lines.push(currentLine);
           currentLine = char;
@@ -125,7 +125,7 @@ export async function onRequest(context) {
     }
 
     // 왼쪽 본문 영역
-    const contentLines = wrapText(content, 530);
+    const contentLines = wrapText(content, 1015);
     let contentHtml = '';
     for (let i = 0; i < contentLines.length; i++) {
       contentHtml += `<text x="85" y="${530 + (i * 50)}" fill="${orange}" font-size="28" font-family="'Noto Sans KR', sans-serif" font-weight="700">${contentLines[i]}</text>`;
@@ -169,7 +169,7 @@ export async function onRequest(context) {
         <image href="data:image/png;base64,${bgBase64}" width="1920" height="1080"/>
         
         <!-- 제목 + 작성자 -->
-        <text x="85" y="445" fill="${titleColor}" font-size="35" font-family="'Noto Sans KR', sans-serif" font-weight="700">${prefix}${title}</text>
+        <text x="85" y="450" fill="${titleColor}" font-size="35" font-family="'Noto Sans KR', sans-serif" font-weight="700">${prefix}${title}</text>
         <text x="85" y="480" fill="${dimOrange}" font-size="25" font-family="'Noto Sans KR', sans-serif" font-weight="700">${author}</text>
         
         <!-- 본문 (왼쪽) -->
