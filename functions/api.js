@@ -45,7 +45,7 @@ export async function onRequest(context) {
     }
 
     // 게시물 Y 좌표 (4개 박스) - 1920x1080 기준
-    const boxY = [440, 600, 760, 920];
+    const boxY = [430, 590, 750, 910];
     const titleY = boxY.map(y => y + 45);
     const authorY = boxY.map(y => y + 95);
     const commentY = boxY.map(y => y + 70);
