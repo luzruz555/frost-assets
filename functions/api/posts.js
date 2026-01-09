@@ -1,5 +1,5 @@
 // /functions/api/posts.js
-// Pages Functions - /api/posts 엔드포인트 (공지 지원)
+// Pages Functions - /api/posts 엔드포인트 (캐싱 + 공지 지원)
 
 export async function onRequest(context) {
     const { request, env } = context;
@@ -76,7 +76,6 @@ async function handleSavePost(request, env, corsHeaders) {
         if (isNotice) {
             index.unshift(indexEntry);
         } else {
-            // 공지가 아닌 첫 번째 글 위치 찾기
             const firstNonNoticeIndex = index.findIndex(p => !p.isNotice);
             if (firstNonNoticeIndex === -1) {
                 index.push(indexEntry);
@@ -85,7 +84,7 @@ async function handleSavePost(request, env, corsHeaders) {
             }
         }
 
-        // 일반 글만 100개 제한 (공지는 제외)
+        // 일반 글만 100개 제한
         const notices = index.filter(p => p.isNotice);
         const regularPosts = index.filter(p => !p.isNotice);
         if (regularPosts.length > 100) {
@@ -107,7 +106,7 @@ async function handleSavePost(request, env, corsHeaders) {
     }
 }
 
-// 글 목록 조회
+// 글 목록 조회 (캐싱 적용)
 async function handleGetPosts(url, env, corsHeaders) {
     try {
         const page = parseInt(url.searchParams.get('page')) || 1;
@@ -122,12 +121,12 @@ async function handleGetPosts(url, env, corsHeaders) {
         let notices = index.filter(p => p.isNotice);
         let regularPosts = index.filter(p => !p.isNotice);
 
-        // 타입 필터링 (일반 글만, 공지는 항상 표시)
+        // 타입 필터링
         if (type) {
             regularPosts = regularPosts.filter(p => p.type === type);
         }
 
-        // 페이지네이션 (일반 글만)
+        // 페이지네이션
         const total = regularPosts.length;
         const totalPages = Math.ceil(total / limit);
         const start = (page - 1) * limit;
@@ -145,7 +144,12 @@ async function handleGetPosts(url, env, corsHeaders) {
             page,
             totalPages
         }), {
-            headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+            headers: { 
+                ...corsHeaders, 
+                'Content-Type': 'application/json',
+                // 30초 캐시 - 브라우저가 30초간 KV 안 찌름
+                'Cache-Control': 'public, max-age=30, s-maxage=30'
+            }
         });
 
     } catch (error) {
