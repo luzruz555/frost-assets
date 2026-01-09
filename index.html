@@ -64,6 +64,15 @@
             background: rgba(212, 116, 60, 0.1);
         }
         
+        .nav a.notice-tab {
+            color: #FFD700;
+            border-color: #FFD700;
+        }
+        
+        .nav a.notice-tab:hover, .nav a.notice-tab.active {
+            background: rgba(255, 215, 0, 0.1);
+        }
+        
         .terminal {
             border: 2px solid #D4743C;
             background: #0d0d0d;
@@ -244,6 +253,7 @@
         
         <nav class="nav">
             <a href="#" class="active" data-type="">전체</a>
+            <a href="#" class="notice-tab" data-type="notice">공지</a>
             <a href="#" data-type="free">자유</a>
             <a href="#" data-type="info">정보</a>
             <a href="#" data-type="trade">거래</a>
@@ -305,29 +315,42 @@
             
             try {
                 let url = `${API_URL}/api/posts?page=${currentPage}&limit=15`;
-                if (currentType) url += `&type=${currentType}`;
+                if (currentType && currentType !== 'notice') {
+                    url += `&type=${currentType}`;
+                }
+                if (currentType === 'notice') {
+                    url += `&noticeOnly=true`;
+                }
                 
                 const response = await fetch(url);
                 const data = await response.json();
                 
                 loading.style.display = 'none';
                 
-                if (data.posts.length === 0) {
+                // 공지 탭이면 공지만 표시
+                let postsToShow = data.posts;
+                if (currentType === 'notice') {
+                    postsToShow = data.posts.filter(p => p.isNotice);
+                }
+                
+                if (postsToShow.length === 0) {
                     emptyMessage.style.display = 'block';
                     pagination.style.display = 'none';
                     document.getElementById('postCount').textContent = '[0 ENTRIES]';
                     return;
                 }
                 
-                totalPages = data.totalPages;
-                const totalCount = data.total + (data.notices || 0);
+                totalPages = data.totalPages || 1;
+                const totalCount = currentType === 'notice' 
+                    ? postsToShow.length 
+                    : data.total + (data.notices || 0);
                 document.getElementById('postCount').textContent = `[${totalCount} ENTRIES]`;
                 document.getElementById('pageInfo').textContent = `${currentPage} / ${totalPages}`;
                 document.getElementById('prevBtn').disabled = currentPage <= 1;
                 document.getElementById('nextBtn').disabled = currentPage >= totalPages;
-                pagination.style.display = totalPages > 1 ? 'flex' : 'none';
+                pagination.style.display = (totalPages > 1 && currentType !== 'notice') ? 'flex' : 'none';
                 
-                data.posts.forEach(post => {
+                postsToShow.forEach(post => {
                     const li = document.createElement('li');
                     li.className = 'post-item' + (post.isNotice ? ' notice' : '');
                     li.onclick = () => location.href = `post.html?id=${post.id}`;
