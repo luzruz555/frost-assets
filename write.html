@@ -333,13 +333,16 @@
         <div class="modal-content" id="modalContent">
             <div class="modal-icon" id="modalIcon"></div>
             <div class="modal-message" id="modalMessage"></div>
-            <button class="modal-btn" onclick="closeModal()">[ CONFIRM ]</button>
+            <button class="modal-btn" id="modalBtn" onclick="closeModal()">[ CONFIRM ]</button>
         </div>
     </div>
     
     <script>
-        // API 엔드포인트 (Render 배포 후 변경)
+        // API 엔드포인트
         const API_URL = 'https://frost-community-bot.onrender.com';
+        
+        let isSubmitting = false;
+        let shouldRedirect = false;
         
         // 글자 수 카운터
         document.getElementById('title').addEventListener('input', function() {
@@ -359,6 +362,10 @@
         // 폼 제출
         document.getElementById('postForm').addEventListener('submit', async function(e) {
             e.preventDefault();
+            
+            // 중복 제출 방지
+            if (isSubmitting) return;
+            isSubmitting = true;
             
             const btn = document.getElementById('submitBtn');
             btn.classList.add('loading');
@@ -384,6 +391,7 @@
                 const result = await response.json();
                 
                 if (response.ok) {
+                    shouldRedirect = true;
                     showModal('success', '✓', result.message || '글이 제출되었습니다.\n관리자 승인을 기다려주세요.');
                     this.reset();
                     document.getElementById('titleCount').textContent = '0';
@@ -397,6 +405,7 @@
             } finally {
                 btn.classList.remove('loading');
                 btn.disabled = false;
+                isSubmitting = false;
             }
         });
         
@@ -415,6 +424,12 @@
         
         function closeModal() {
             document.getElementById('resultModal').classList.remove('active');
+            
+            // 성공 시 홈으로 이동
+            if (shouldRedirect) {
+                shouldRedirect = false;
+                location.href = 'index.html';
+            }
         }
         
         // ESC로 모달 닫기
