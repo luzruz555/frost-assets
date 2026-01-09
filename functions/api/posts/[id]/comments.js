@@ -1,5 +1,5 @@
 // /functions/api/posts/[id]/comments.js
-// Pages Functions - /api/posts/:id/comments 엔드포인트
+// Pages Functions - 댓글 + 대댓글 API
 
 export async function onRequest(context) {
     const { request, env, params } = context;
@@ -15,7 +15,6 @@ export async function onRequest(context) {
         return new Response(null, { headers: corsHeaders });
     }
 
-    // POST: 댓글 작성
     if (request.method === 'POST') {
         return handleAddComment(postId, request, env, corsHeaders);
     }
@@ -25,7 +24,7 @@ export async function onRequest(context) {
 
 async function handleAddComment(postId, request, env, corsHeaders) {
     try {
-        const { author, content } = await request.json();
+        const { author, content, parentIndex } = await request.json();
 
         // 유효성 검사
         if (!author || !content) {
@@ -42,8 +41,9 @@ async function handleAddComment(postId, request, env, corsHeaders) {
             });
         }
 
-        if (content.length > 500) {
-            return new Response(JSON.stringify({ error: '댓글은 500자 이내로 입력해주세요.' }), {
+        const maxLength = parentIndex !== undefined ? 300 : 500;
+        if (content.length > maxLength) {
+            return new Response(JSON.stringify({ error: `내용은 ${maxLength}자 이내로 입력해주세요.` }), {
                 status: 400,
                 headers: { ...corsHeaders, 'Content-Type': 'application/json' }
             });
@@ -59,29 +59,72 @@ async function handleAddComment(postId, request, env, corsHeaders) {
         }
 
         const post = JSON.parse(postData);
+        if (!post.comments) post.comments = [];
 
-        // 댓글 추가
+        // 대댓글인 경우
+        if (parentIndex !== undefined && parentIndex !== null) {
+            const parentComment = post.comments[parentIndex];
+            if (!parentComment) {
+                return new Response(JSON.stringify({ error: '부모 댓글을 찾을 수 없습니다.' }), {
+                    status: 404,
+                    headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+                });
+            }
+
+            if (!parentComment.replies) parentComment.replies = [];
+            
+            // 대댓글 최대 20개 제한
+            if (parentComment.replies.length >= 20) {
+                return new Response(JSON.stringify({ error: '답글은 최대 20개까지 작성할 수 있습니다.' }), {
+                    status: 400,
+                    headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+                });
+            }
+
+            const reply = {
+                id: `reply_${Date.now()}_${Math.random().toString(36).substr(2, 6)}`,
+                author,
+                content,
+                createdAt: Date.now()
+            };
+
+            parentComment.replies.push(reply);
+
+            // 저장
+            await env.FROST_POSTS.put(`post:${postId}`, JSON.stringify(post));
+
+            return new Response(JSON.stringify({ success: true, reply }), {
+                headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+            });
+        }
+
+        // 일반 댓글
         const comment = {
             id: `comment_${Date.now()}_${Math.random().toString(36).substr(2, 6)}`,
             author,
             content,
-            createdAt: Date.now()
+            createdAt: Date.now(),
+            replies: []
         };
 
-        if (!post.comments) post.comments = [];
         post.comments.push(comment);
 
         // 저장
         await env.FROST_POSTS.put(`post:${postId}`, JSON.stringify(post));
 
-        // 인덱스의 댓글 수 업데이트
+        // 인덱스의 댓글 수 업데이트 (대댓글 포함)
         const indexKey = 'posts:index';
         const existingIndex = await env.FROST_POSTS.get(indexKey);
         if (existingIndex) {
             const index = JSON.parse(existingIndex);
             const postIndex = index.findIndex(p => p.id === postId);
             if (postIndex !== -1) {
-                index[postIndex].commentCount = post.comments.length;
+                // 총 댓글 수 계산 (대댓글 포함)
+                let totalComments = post.comments.length;
+                post.comments.forEach(c => {
+                    if (c.replies) totalComments += c.replies.length;
+                });
+                index[postIndex].commentCount = totalComments;
                 await env.FROST_POSTS.put(indexKey, JSON.stringify(index));
             }
         }
