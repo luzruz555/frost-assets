@@ -121,6 +121,14 @@
             word-break: break-word;
         }
         
+        /* 마크다운 이미지 */
+        .post-content img {
+            max-width: 100%;
+            height: auto;
+            margin: 10px 0;
+            border: 1px solid #333;
+        }
+        
         .post-actions {
             margin-top: 20px;
             padding-top: 15px;
@@ -159,7 +167,7 @@
         }
         
         .comments-list {
-            max-height: 400px;
+            max-height: 600px;
             overflow-y: auto;
         }
         
@@ -177,6 +185,7 @@
             gap: 15px;
             margin-bottom: 8px;
             font-size: 11px;
+            align-items: center;
         }
         
         .comment-author {
@@ -191,6 +200,103 @@
             font-size: 13px;
             color: #999;
             line-height: 1.6;
+        }
+        
+        /* 마크다운 이미지 (댓글) */
+        .comment-content img {
+            max-width: 100%;
+            max-height: 300px;
+            height: auto;
+            margin: 5px 0;
+            border: 1px solid #333;
+        }
+        
+        .reply-btn {
+            background: none;
+            border: none;
+            color: #666;
+            font-size: 10px;
+            cursor: pointer;
+            padding: 2px 8px;
+            font-family: 'IBM Plex Mono', monospace;
+        }
+        
+        .reply-btn:hover {
+            color: #D4743C;
+        }
+        
+        /* 대댓글 */
+        .replies {
+            margin-top: 10px;
+            margin-left: 20px;
+            padding-left: 15px;
+            border-left: 2px solid #222;
+        }
+        
+        .reply-item {
+            padding: 10px 0;
+            border-bottom: 1px solid #1a1a1a;
+        }
+        
+        .reply-item:last-child {
+            border-bottom: none;
+        }
+        
+        .reply-item .comment-author {
+            color: #60a5fa;
+        }
+        
+        /* 대댓글 폼 */
+        .reply-form {
+            margin-top: 10px;
+            margin-left: 20px;
+            padding: 10px;
+            background: #111;
+            display: none;
+        }
+        
+        .reply-form.active {
+            display: block;
+        }
+        
+        .reply-form input {
+            width: 80px;
+            background: #1a1a1a;
+            border: 1px solid #333;
+            color: #D4743C;
+            padding: 8px;
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 11px;
+            outline: none;
+            margin-right: 5px;
+        }
+        
+        .reply-form textarea {
+            width: 100%;
+            background: #1a1a1a;
+            border: 1px solid #333;
+            color: #ccc;
+            padding: 8px;
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 11px;
+            outline: none;
+            resize: none;
+            height: 50px;
+            margin: 5px 0;
+        }
+        
+        .reply-form button {
+            background: #333;
+            border: none;
+            color: #D4743C;
+            padding: 6px 12px;
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 10px;
+            cursor: pointer;
+        }
+        
+        .reply-form button:hover {
+            background: #444;
         }
         
         .comment-form {
@@ -258,6 +364,13 @@
             text-align: center;
             color: #444;
             font-size: 12px;
+        }
+        
+        .image-hint {
+            font-size: 10px;
+            color: #444;
+            padding: 5px 15px;
+            border-top: 1px dashed #222;
         }
         
         .loading {
@@ -344,6 +457,10 @@
             .comment-form input {
                 width: 100%;
             }
+            .replies {
+                margin-left: 10px;
+                padding-left: 10px;
+            }
         }
     </style>
 </head>
@@ -386,6 +503,7 @@
             <div class="comments-list" id="commentsList">
                 <div class="no-comments">아직 댓글이 없습니다.</div>
             </div>
+            <div class="image-hint">TIP: 이미지 첨부는 ![설명](이미지URL) 형식으로 입력</div>
             <form class="comment-form" id="commentForm">
                 <input type="text" id="commentAuthor" placeholder="닉네임" maxlength="20" required>
                 <textarea id="commentContent" placeholder="댓글을 입력하세요..." maxlength="500" required></textarea>
@@ -418,6 +536,24 @@
             location.href = 'index.html';
         }
         
+        // 마크다운 이미지 변환
+        function parseMarkdownImages(text) {
+            // ![alt](url) 패턴을 <img>로 변환
+            const imgRegex = /!\[([^\]]*)\]\(([^)]+)\)/g;
+            let parsed = escapeHtml(text);
+            
+            // 이스케이프된 후 다시 이미지 태그로 변환
+            parsed = parsed.replace(/!\[([^\]]*)\]\(([^)]+)\)/g, (match, alt, url) => {
+                // 간단한 URL 검증 (http/https만 허용)
+                if (url.match(/^https?:\/\/.+/i)) {
+                    return `<img src="${url}" alt="${alt}" onerror="this.style.display='none'">`;
+                }
+                return match;
+            });
+            
+            return parsed;
+        }
+        
         // 글 로드
         async function loadPost() {
             try {
@@ -444,7 +580,9 @@
                 document.getElementById('postAuthor').textContent = post.author;
                 document.getElementById('postDate').textContent = formatDate(post.createdAt);
                 document.getElementById('postTitle').textContent = post.title;
-                document.getElementById('postBody').textContent = post.content;
+                
+                // 마크다운 이미지 파싱
+                document.getElementById('postBody').innerHTML = parseMarkdownImages(post.content);
                 
                 // 댓글 표시
                 renderComments(post.comments || []);
@@ -455,32 +593,107 @@
             }
         }
         
+        // 총 댓글 수 계산 (대댓글 포함)
+        function countAllComments(comments) {
+            let count = comments.length;
+            comments.forEach(c => {
+                if (c.replies) count += c.replies.length;
+            });
+            return count;
+        }
+        
         // 댓글 렌더링
         function renderComments(comments) {
             const list = document.getElementById('commentsList');
-            document.getElementById('commentCount').textContent = comments.length;
+            document.getElementById('commentCount').textContent = countAllComments(comments);
             
             if (comments.length === 0) {
                 list.innerHTML = '<div class="no-comments">아직 댓글이 없습니다.</div>';
                 return;
             }
             
-            list.innerHTML = comments.map(c => `
-                <div class="comment-item">
+            list.innerHTML = comments.map((c, i) => `
+                <div class="comment-item" data-index="${i}">
                     <div class="comment-meta">
                         <span class="comment-author">${escapeHtml(c.author)}</span>
                         <span class="comment-date">${formatDate(c.createdAt)}</span>
+                        <button class="reply-btn" onclick="toggleReplyForm(${i})">답글</button>
                     </div>
-                    <div class="comment-content">${escapeHtml(c.content)}</div>
+                    <div class="comment-content">${parseMarkdownImages(c.content)}</div>
+                    
+                    <!-- 대댓글 목록 -->
+                    ${c.replies && c.replies.length > 0 ? `
+                        <div class="replies">
+                            ${c.replies.map(r => `
+                                <div class="reply-item">
+                                    <div class="comment-meta">
+                                        <span class="comment-author">${escapeHtml(r.author)}</span>
+                                        <span class="comment-date">${formatDate(r.createdAt)}</span>
+                                    </div>
+                                    <div class="comment-content">${parseMarkdownImages(r.content)}</div>
+                                </div>
+                            `).join('')}
+                        </div>
+                    ` : ''}
+                    
+                    <!-- 대댓글 폼 -->
+                    <div class="reply-form" id="replyForm-${i}">
+                        <input type="text" id="replyAuthor-${i}" placeholder="닉네임" maxlength="20">
+                        <textarea id="replyContent-${i}" placeholder="답글을 입력하세요..." maxlength="300"></textarea>
+                        <button onclick="submitReply(${i})">등록</button>
+                    </div>
                 </div>
             `).join('');
+        }
+        
+        // 대댓글 폼 토글
+        function toggleReplyForm(index) {
+            const form = document.getElementById(`replyForm-${index}`);
+            form.classList.toggle('active');
+            if (form.classList.contains('active')) {
+                document.getElementById(`replyAuthor-${index}`).focus();
+            }
+        }
+        
+        // 대댓글 제출
+        async function submitReply(commentIndex) {
+            const author = document.getElementById(`replyAuthor-${commentIndex}`).value.trim();
+            const content = document.getElementById(`replyContent-${commentIndex}`).value.trim();
+            
+            if (!author || !content) {
+                alert('닉네임과 내용을 입력해주세요.');
+                return;
+            }
+            
+            try {
+                const response = await fetch(`${API_URL}/api/posts/${postId}/comments`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ 
+                        author, 
+                        content,
+                        parentIndex: commentIndex  // 부모 댓글 인덱스
+                    })
+                });
+                
+                if (response.ok) {
+                    document.getElementById(`replyContent-${commentIndex}`).value = '';
+                    document.getElementById(`replyForm-${commentIndex}`).classList.remove('active');
+                    loadPost(); // 새로고침
+                } else {
+                    const err = await response.json();
+                    alert(err.error || '답글 작성 실패');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('서버 연결 실패');
+            }
         }
         
         // 댓글 작성 (연타 방지)
         document.getElementById('commentForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             
-            // 중복 제출 방지
             if (isSubmittingComment) return;
             isSubmittingComment = true;
             
@@ -510,13 +723,12 @@
                     const result = await response.json();
                     document.getElementById('commentContent').value = '';
                     
-                    // 즉시 댓글 추가 (API 재호출 없이)
                     if (result.comment && currentPost) {
                         if (!currentPost.comments) currentPost.comments = [];
                         currentPost.comments.push(result.comment);
                         renderComments(currentPost.comments);
                     } else {
-                        loadPost(); // fallback
+                        loadPost();
                     }
                 } else {
                     const err = await response.json();
@@ -526,7 +738,6 @@
                 console.error('Error:', error);
                 alert('서버 연결 실패');
             } finally {
-                // 3초 쿨다운
                 setTimeout(() => {
                     isSubmittingComment = false;
                     btn.textContent = originalText;
@@ -577,7 +788,7 @@
         // 유틸리티 - 2076년으로 표시
         function formatDate(timestamp) {
             const d = new Date(timestamp);
-            const year = 2076; // 세계관 년도
+            const year = 2076;
             return `${year}.${String(d.getMonth()+1).padStart(2,'0')}.${String(d.getDate()).padStart(2,'0')} ${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`;
         }
         
@@ -597,4 +808,3 @@
     </script>
 </body>
 </html>
-
