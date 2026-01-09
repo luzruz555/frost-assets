@@ -1,5 +1,5 @@
-// /functions/api/posts/[id].js
-// Pages Functions - /api/posts/:id 엔드포인트
+// /functions/api/admin/posts/[id].js
+// 관리자 전용 - 글 삭제 API
 
 export async function onRequest(context) {
     const { request, env, params } = context;
@@ -7,59 +7,33 @@ export async function onRequest(context) {
 
     const corsHeaders = {
         'Access-Control-Allow-Origin': '*',
-        'Access-Control-Allow-Methods': 'GET, DELETE, OPTIONS',
-        'Access-Control-Allow-Headers': 'Content-Type',
+        'Access-Control-Allow-Methods': 'DELETE, OPTIONS',
+        'Access-Control-Allow-Headers': 'Content-Type, X-Admin-Key',
     };
 
     if (request.method === 'OPTIONS') {
         return new Response(null, { headers: corsHeaders });
     }
 
-    // GET: 글 상세 조회
-    if (request.method === 'GET') {
-        return handleGetPost(postId, env, corsHeaders);
+    // 관리자 인증
+    const adminKey = request.headers.get('X-Admin-Key');
+    if (adminKey !== 'luzruz555') {
+        return new Response(JSON.stringify({ error: 'Unauthorized' }), {
+            status: 401,
+            headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+        });
     }
 
-    // DELETE: 글 삭제
     if (request.method === 'DELETE') {
-        return handleDeletePost(postId, request, env, corsHeaders);
+        return handleAdminDelete(postId, env, corsHeaders);
     }
 
     return new Response('Method not allowed', { status: 405, headers: corsHeaders });
 }
 
-// 글 상세 조회
-async function handleGetPost(postId, env, corsHeaders) {
+async function handleAdminDelete(postId, env, corsHeaders) {
     try {
-        const post = await env.FROST_POSTS.get(`post:${postId}`);
-        
-        if (!post) {
-            return new Response(JSON.stringify({ error: 'Post not found' }), {
-                status: 404,
-                headers: { ...corsHeaders, 'Content-Type': 'application/json' }
-            });
-        }
-
-        const parsed = JSON.parse(post);
-        delete parsed.password; // 비밀번호 숨김
-
-        return new Response(JSON.stringify(parsed), {
-            headers: { ...corsHeaders, 'Content-Type': 'application/json' }
-        });
-
-    } catch (error) {
-        return new Response(JSON.stringify({ error: error.message }), {
-            status: 500,
-            headers: { ...corsHeaders, 'Content-Type': 'application/json' }
-        });
-    }
-}
-
-// 글 삭제
-async function handleDeletePost(postId, request, env, corsHeaders) {
-    try {
-        const { password } = await request.json();
-        
+        // 글 존재 확인
         const post = await env.FROST_POSTS.get(`post:${postId}`);
         if (!post) {
             return new Response(JSON.stringify({ error: 'Post not found' }), {
@@ -68,15 +42,7 @@ async function handleDeletePost(postId, request, env, corsHeaders) {
             });
         }
 
-        const parsed = JSON.parse(post);
-        
-        if (parsed.password !== password) {
-            return new Response(JSON.stringify({ error: 'Invalid password' }), {
-                status: 403,
-                headers: { ...corsHeaders, 'Content-Type': 'application/json' }
-            });
-        }
-
+        // KV에서 삭제
         await env.FROST_POSTS.delete(`post:${postId}`);
 
         // 인덱스에서 제거
