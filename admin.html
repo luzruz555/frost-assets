@@ -17,29 +17,24 @@
             padding: 20px;
         }
         
-        .container { max-width: 1000px; margin: 0 auto; }
+        .container { max-width: 1200px; margin: 0 auto; }
         
         .header {
             border: 2px solid #ff4444;
             padding: 15px 20px;
             margin-bottom: 20px;
-            background: rgba(255, 68, 68, 0.05);
+            background: rgba(255, 68, 68, 0.1);
         }
-        
         .header h1 { font-size: 14px; font-weight: 500; color: #ff4444; }
-        .header .path { color: #888; font-size: 12px; margin-top: 5px; }
         
-        .login-box {
-            border: 2px solid #D4743C;
-            background: #0d0d0d;
-            padding: 40px;
+        .login-form {
+            border: 2px solid #333;
+            padding: 30px;
             max-width: 400px;
             margin: 100px auto;
         }
-        
-        .login-box h2 { font-size: 14px; margin-bottom: 20px; text-align: center; }
-        
-        .login-box input {
+        .login-form h2 { font-size: 14px; margin-bottom: 20px; text-align: center; }
+        .login-form input {
             width: 100%;
             background: #1a1a1a;
             border: 1px solid #333;
@@ -49,8 +44,7 @@
             margin-bottom: 15px;
             outline: none;
         }
-        
-        .login-box button {
+        .login-form button {
             width: 100%;
             background: #D4743C;
             border: none;
@@ -63,320 +57,275 @@
         .admin-panel { display: none; }
         .admin-panel.active { display: block; }
         
-        .terminal { border: 2px solid #D4743C; background: #0d0d0d; margin-bottom: 20px; }
-        .terminal-header {
-            background: #D4743C;
-            color: #0a0a0a;
-            padding: 8px 15px;
-            font-size: 12px;
+        .post-item {
+            border: 1px solid #333;
+            padding: 15px;
+            margin-bottom: 10px;
+            background: #0d0d0d;
+        }
+        .post-header {
             display: flex;
             justify-content: space-between;
-        }
-        .terminal-body { padding: 15px; max-height: 500px; overflow-y: auto; }
-        
-        .post-item {
-            display: grid;
-            grid-template-columns: 60px 1fr 100px 80px;
-            gap: 10px;
-            padding: 10px;
-            border-bottom: 1px solid #222;
             align-items: center;
+            margin-bottom: 10px;
+            flex-wrap: wrap;
+            gap: 10px;
         }
-        .post-item:hover { background: rgba(212, 116, 60, 0.05); }
-        
-        .post-type { font-size: 10px; padding: 2px 6px; border: 1px solid; text-align: center; }
-        .post-type.free { color: #888; border-color: #888; }
-        .post-type.info { color: #4ade80; border-color: #4ade80; }
-        .post-type.trade { color: #60a5fa; border-color: #60a5fa; }
-        .post-type.help { color: #f472b6; border-color: #f472b6; }
+        .post-title { color: #ccc; font-size: 14px; }
+        .post-meta { font-size: 11px; color: #666; }
+        .post-type { font-size: 10px; padding: 2px 6px; border: 1px solid; margin-right: 10px; }
         .post-type.notice { color: #FFD700; border-color: #FFD700; }
         
-        .post-title { font-size: 12px; color: #ccc; cursor: pointer; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-        .post-title:hover { color: #D4743C; }
-        .post-author { font-size: 11px; color: #666; }
-        
-        .btn-delete {
+        .btn {
             background: transparent;
-            border: 1px solid #ff4444;
-            color: #ff4444;
+            border: 1px solid #333;
+            color: #888;
             padding: 5px 10px;
             font-family: 'IBM Plex Mono', monospace;
             font-size: 10px;
             cursor: pointer;
+            margin-left: 5px;
         }
-        .btn-delete:hover { background: #ff4444; color: #0a0a0a; }
+        .btn:hover { border-color: #D4743C; color: #D4743C; }
+        .btn.danger { border-color: #ff4444; color: #ff4444; }
+        .btn.danger:hover { background: #ff4444; color: #0a0a0a; }
         
-        .modal {
-            display: none;
-            position: fixed;
-            top: 0; left: 0;
-            width: 100%; height: 100%;
-            background: rgba(0,0,0,0.9);
-            justify-content: center;
-            align-items: center;
-            z-index: 1000;
-            padding: 20px;
+        .comments-list {
+            margin-top: 10px;
+            padding-top: 10px;
+            border-top: 1px dashed #222;
         }
-        .modal.active { display: flex; }
-        
-        .modal-content {
-            border: 2px solid #D4743C;
-            background: #0d0d0d;
-            padding: 20px;
-            max-width: 700px;
-            width: 100%;
-            max-height: 80vh;
-            overflow-y: auto;
-        }
-        
-        .modal-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 15px;
-            padding-bottom: 10px;
-            border-bottom: 1px solid #333;
-        }
-        .modal-header h3 { font-size: 14px; }
-        .modal-close { background: none; border: none; color: #D4743C; font-size: 20px; cursor: pointer; }
-        
-        .post-detail-content {
-            background: #1a1a1a;
-            padding: 15px;
-            margin-bottom: 15px;
-            white-space: pre-wrap;
-            font-size: 13px;
-            color: #aaa;
-            line-height: 1.6;
-        }
-        
-        .comment-item-admin {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-            padding: 10px;
-            border-bottom: 1px solid #222;
-        }
-        .comment-info { flex: 1; }
-        .comment-meta { font-size: 11px; color: #666; margin-bottom: 5px; }
-        .comment-meta .author { color: #D4743C; }
-        .comment-text { font-size: 12px; color: #999; }
-        
-        .replies-admin { margin-left: 20px; padding-left: 10px; border-left: 2px solid #333; }
-        .reply-item-admin {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
+        .comment-item {
             padding: 8px;
-            border-bottom: 1px solid #1a1a1a;
-        }
-        .reply-item-admin .comment-meta .author { color: #60a5fa; }
-        
-        .loading { text-align: center; padding: 30px; color: #666; }
-        @keyframes blink { 0%, 50% { opacity: 1; } 51%, 100% { opacity: 0; } }
-        .blink { animation: blink 1s infinite; }
-        
-        .logout-btn, .refresh-btn {
-            background: transparent;
-            padding: 8px 15px;
-            font-family: 'IBM Plex Mono', monospace;
+            background: #111;
+            margin-bottom: 5px;
             font-size: 12px;
-            cursor: pointer;
+        }
+        .comment-author { color: #D4743C; }
+        .reply-item {
+            margin-left: 20px;
+            padding: 6px 8px;
+            background: #151515;
+            border-left: 2px solid #333;
+        }
+        .reply-item .comment-author { color: #60a5fa; }
+        
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
             margin-bottom: 20px;
         }
-        .logout-btn { border: 1px solid #ff4444; color: #ff4444; }
-        .logout-btn:hover { background: #ff4444; color: #0a0a0a; }
-        .refresh-btn { border: 1px solid #4ade80; color: #4ade80; margin-left: 10px; }
-        .refresh-btn:hover { background: #4ade80; color: #0a0a0a; }
-
-        .stats { display: flex; gap: 20px; margin-bottom: 20px; flex-wrap: wrap; }
-        .stat-box { border: 1px solid #333; padding: 15px 20px; background: #0d0d0d; }
-        .stat-box .label { font-size: 11px; color: #666; }
-        .stat-box .value { font-size: 24px; color: #D4743C; }
+        .stat-box {
+            border: 1px solid #333;
+            padding: 15px;
+            text-align: center;
+        }
+        .stat-box .number { font-size: 24px; color: #D4743C; }
+        .stat-box .label { font-size: 11px; color: #666; margin-top: 5px; }
+        
+        .loading { text-align: center; padding: 30px; color: #666; }
     </style>
 </head>
 <body>
     <div class="container">
-        <div class="header">
-            <h1>⚠️ FROST_COMMUNITY // ADMIN_CONSOLE</h1>
-            <div class="path">C:\FROST\ADMIN\</div>
+        <!-- 로그인 폼 -->
+        <div class="login-form" id="loginForm">
+            <h2>ADMIN LOGIN</h2>
+            <input type="text" id="adminUser" placeholder="관리자 ID">
+            <input type="password" id="adminPass" placeholder="비밀번호">
+            <button onclick="login()">LOGIN</button>
         </div>
         
-        <div class="login-box" id="loginBox">
-            <h2>[ ADMIN_AUTH ]</h2>
-            <input type="password" id="adminPassword" placeholder="관리자 비밀번호" onkeypress="if(event.key==='Enter')login()">
-            <button onclick="login()">[ ACCESS ]</button>
-        </div>
-        
+        <!-- 관리자 패널 -->
         <div class="admin-panel" id="adminPanel">
-            <button class="logout-btn" onclick="logout()">[ LOGOUT ]</button>
-            <button class="refresh-btn" onclick="loadPosts()">[ REFRESH ]</button>
-            
-            <div class="stats">
-                <div class="stat-box">
-                    <div class="label">TOTAL_POSTS</div>
-                    <div class="value" id="totalPosts">0</div>
-                </div>
-                <div class="stat-box">
-                    <div class="label">NOTICES</div>
-                    <div class="value" id="totalNotices">0</div>
-                </div>
+            <div class="header">
+                <h1>⚠️ FROST_COMMUNITY // ADMIN PANEL</h1>
             </div>
             
-            <div class="terminal">
-                <div class="terminal-header">
-                    <span>POST_MANAGER.exe</span>
-                    <span id="postCount">[0 ENTRIES]</span>
+            <div class="stats" id="stats">
+                <div class="stat-box">
+                    <div class="number" id="totalPosts">-</div>
+                    <div class="label">총 글 수</div>
                 </div>
-                <div class="terminal-body" id="postList">
-                    <div class="loading">LOADING<span class="blink">_</span></div>
+                <div class="stat-box">
+                    <div class="number" id="totalComments">-</div>
+                    <div class="label">총 댓글 수</div>
+                </div>
+                <div class="stat-box">
+                    <div class="number" id="totalNotices">-</div>
+                    <div class="label">공지 수</div>
                 </div>
             </div>
-        </div>
-    </div>
-    
-    <div class="modal" id="postModal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3 id="modalTitle">글 상세</h3>
-                <button class="modal-close" onclick="closeModal()">&times;</button>
+            
+            <div id="postsList">
+                <div class="loading">로딩 중...</div>
             </div>
-            <div class="post-detail-content" id="modalContent"></div>
-            <div id="modalComments"></div>
         </div>
     </div>
     
     <script>
         const API_URL = 'https://frostc.pages.dev';
-        const ADMIN_PASSWORD = 'luzruz555';
-        let isLoggedIn = false;
+        const ADMIN_USER = '겁많은두더지';
+        const ADMIN_PASS = 'luzruz555';
+        
+        let adminKey = '';
         
         function login() {
-            if (document.getElementById('adminPassword').value === ADMIN_PASSWORD) {
-                isLoggedIn = true;
-                document.getElementById('loginBox').style.display = 'none';
-                document.getElementById('adminPanel').classList.add('active');
-                loadPosts();
-            } else { alert('ACCESS DENIED'); }
-        }
-        
-        function logout() {
-            isLoggedIn = false;
-            document.getElementById('loginBox').style.display = 'block';
-            document.getElementById('adminPanel').classList.remove('active');
-        }
-        
-        async function loadPosts() {
-            if (!isLoggedIn) return;
-            const postList = document.getElementById('postList');
-            postList.innerHTML = '<div class="loading">LOADING<span class="blink">_</span></div>';
+            const user = document.getElementById('adminUser').value;
+            const pass = document.getElementById('adminPass').value;
             
+            if (user === ADMIN_USER && pass === ADMIN_PASS) {
+                adminKey = pass;
+                document.getElementById('loginForm').style.display = 'none';
+                document.getElementById('adminPanel').classList.add('active');
+                loadAllPosts();
+            } else {
+                alert('로그인 실패');
+            }
+        }
+        
+        async function loadAllPosts() {
             try {
                 const response = await fetch(`${API_URL}/api/posts?limit=100`);
                 const data = await response.json();
                 
                 document.getElementById('totalPosts').textContent = data.total + data.notices;
                 document.getElementById('totalNotices').textContent = data.notices;
-                document.getElementById('postCount').textContent = `[${data.posts.length} ENTRIES]`;
                 
-                const typeLabel = { free: '자유', info: '정보', trade: '거래', help: '질문' };
-                postList.innerHTML = data.posts.map(post => {
-                    const displayType = post.isNotice ? '공지' : (typeLabel[post.type] || post.type);
-                    const typeClass = post.isNotice ? 'notice' : post.type;
-                    return `<div class="post-item">
-                        <span class="post-type ${typeClass}">${displayType}</span>
-                        <span class="post-title" onclick="viewPost('${post.id}')">${escapeHtml(post.title)}</span>
-                        <span class="post-author">${escapeHtml(post.author)}</span>
-                        <button class="btn-delete" onclick="deletePost('${post.id}')">삭제</button>
-                    </div>`;
-                }).join('') || '<div class="loading">NO_POSTS_FOUND</div>';
+                let totalComments = 0;
+                const postsHtml = [];
+                
+                for (const post of data.posts) {
+                    // 각 글의 상세 정보 가져오기
+                    const detailRes = await fetch(`${API_URL}/api/posts/${post.id}`);
+                    const detail = await detailRes.json();
+                    
+                    const commentCount = countAllComments(detail.comments || []);
+                    totalComments += commentCount;
+                    
+                    postsHtml.push(renderPost(detail));
+                }
+                
+                document.getElementById('totalComments').textContent = totalComments;
+                document.getElementById('postsList').innerHTML = postsHtml.join('');
+                
             } catch (error) {
-                postList.innerHTML = '<div class="loading">ERROR</div>';
+                document.getElementById('postsList').innerHTML = `<div class="loading">오류: ${error.message}</div>`;
             }
         }
         
-        async function viewPost(postId) {
-            try {
-                const response = await fetch(`${API_URL}/api/posts/${postId}`);
-                const post = await response.json();
-                
-                document.getElementById('modalTitle').textContent = post.title;
-                document.getElementById('modalContent').textContent = post.content;
-                
-                let html = '';
-                if (post.comments?.length > 0) {
-                    html = `<h4 style="margin:15px 0 10px;font-size:12px;">COMMENTS [${countAll(post.comments)}]</h4>`;
-                    post.comments.forEach((c, i) => {
-                        html += `<div class="comment-item-admin">
-                            <div class="comment-info">
-                                <div class="comment-meta"><span class="author">${escapeHtml(c.author)}</span> ${formatDate(c.createdAt)}</div>
-                                <div class="comment-text">${escapeHtml(c.content)}</div>
-                            </div>
-                            <button class="btn-delete" onclick="deleteComment('${postId}',${i})">삭제</button>
-                        </div>`;
-                        if (c.replies?.length > 0) {
-                            html += '<div class="replies-admin">';
-                            c.replies.forEach((r, ri) => {
-                                html += `<div class="reply-item-admin">
-                                    <div class="comment-info">
-                                        <div class="comment-meta"><span class="author">↳ ${escapeHtml(r.author)}</span> ${formatDate(r.createdAt)}</div>
-                                        <div class="comment-text">${escapeHtml(r.content)}</div>
-                                    </div>
-                                    <button class="btn-delete" onclick="deleteReply('${postId}',${i},${ri})">삭제</button>
-                                </div>`;
-                            });
-                            html += '</div>';
-                        }
-                    });
-                } else { html = '<p style="color:#666;font-size:12px;">댓글 없음</p>'; }
-                
-                document.getElementById('modalComments').innerHTML = html;
-                document.getElementById('postModal').classList.add('active');
-            } catch (e) { alert('불러오기 실패'); }
-        }
-        
-        function closeModal() { document.getElementById('postModal').classList.remove('active'); }
-        
-        function countAll(comments) {
+        function countAllComments(comments) {
             return comments.reduce((sum, c) => sum + 1 + (c.replies?.length || 0), 0);
         }
         
+        function renderPost(post) {
+            const typeLabel = { free: '자유', info: '정보', trade: '거래', help: '질문' };
+            const displayType = post.isNotice ? '공지' : typeLabel[post.type];
+            
+            let commentsHtml = '';
+            if (post.comments && post.comments.length > 0) {
+                commentsHtml = `
+                    <div class="comments-list">
+                        ${post.comments.map(c => `
+                            <div class="comment-item">
+                                <span class="comment-author">${escapeHtml(c.author)}</span>: 
+                                ${escapeHtml(c.content.substring(0, 50))}${c.content.length > 50 ? '...' : ''}
+                                <button class="btn danger" onclick="deleteComment('${c.id}')">삭제</button>
+                                ${c.replies && c.replies.length > 0 ? c.replies.map(r => `
+                                    <div class="reply-item">
+                                        <span class="comment-author">↳ ${escapeHtml(r.author)}</span>: 
+                                        ${escapeHtml(r.content.substring(0, 50))}
+                                        <button class="btn danger" onclick="deleteReply('${r.id}')">삭제</button>
+                                    </div>
+                                `).join('') : ''}
+                            </div>
+                        `).join('')}
+                    </div>
+                `;
+            }
+            
+            return `
+                <div class="post-item">
+                    <div class="post-header">
+                        <div>
+                            <span class="post-type ${post.isNotice ? 'notice' : ''}">${displayType}</span>
+                            <span class="post-title">${escapeHtml(post.title)}</span>
+                        </div>
+                        <div>
+                            <span class="post-meta">${escapeHtml(post.author)} | ${formatDate(post.createdAt)}</span>
+                            <button class="btn" onclick="location.href='post.html?id=${post.id}'">보기</button>
+                            <button class="btn danger" onclick="deletePost('${post.id}')">삭제</button>
+                        </div>
+                    </div>
+                    ${commentsHtml}
+                </div>
+            `;
+        }
+        
         async function deletePost(postId) {
-            if (!confirm('삭제?')) return;
+            if (!confirm('정말 삭제하시겠습니까?')) return;
+            
             try {
-                const r = await fetch(`${API_URL}/api/admin/posts/${postId}`, {
-                    method: 'DELETE', headers: { 'X-Admin-Key': ADMIN_PASSWORD }
+                const response = await fetch(`${API_URL}/api/admin/posts/${postId}`, {
+                    method: 'DELETE',
+                    headers: { 'X-Admin-Key': adminKey }
                 });
-                if (r.ok) { alert('삭제됨'); loadPosts(); closeModal(); }
-                else alert('실패');
-            } catch (e) { alert('오류'); }
+                
+                if (response.ok) {
+                    alert('삭제됨');
+                    loadAllPosts();
+                } else {
+                    alert('삭제 실패');
+                }
+            } catch (error) {
+                alert('서버 오류');
+            }
         }
         
-        async function deleteComment(postId, idx) {
-            if (!confirm('삭제?')) return;
+        async function deleteComment(commentId) {
+            if (!confirm('댓글을 삭제하시겠습니까?')) return;
+            
             try {
-                const r = await fetch(`${API_URL}/api/admin/posts/${postId}/comments/${idx}`, {
-                    method: 'DELETE', headers: { 'X-Admin-Key': ADMIN_PASSWORD }
+                const response = await fetch(`${API_URL}/api/admin/comments/${commentId}?type=comment`, {
+                    method: 'DELETE',
+                    headers: { 'X-Admin-Key': adminKey }
                 });
-                if (r.ok) { alert('삭제됨'); viewPost(postId); }
-                else alert('실패');
-            } catch (e) { alert('오류'); }
+                
+                if (response.ok) {
+                    alert('삭제됨');
+                    loadAllPosts();
+                } else {
+                    alert('삭제 실패');
+                }
+            } catch (error) {
+                alert('서버 오류');
+            }
         }
         
-        async function deleteReply(postId, cIdx, rIdx) {
-            if (!confirm('삭제?')) return;
+        async function deleteReply(replyId) {
+            if (!confirm('답글을 삭제하시겠습니까?')) return;
+            
             try {
-                const r = await fetch(`${API_URL}/api/admin/posts/${postId}/comments/${cIdx}/replies/${rIdx}`, {
-                    method: 'DELETE', headers: { 'X-Admin-Key': ADMIN_PASSWORD }
+                const response = await fetch(`${API_URL}/api/admin/comments/${replyId}?type=reply`, {
+                    method: 'DELETE',
+                    headers: { 'X-Admin-Key': adminKey }
                 });
-                if (r.ok) { alert('삭제됨'); viewPost(postId); }
-                else alert('실패');
-            } catch (e) { alert('오류'); }
+                
+                if (response.ok) {
+                    alert('삭제됨');
+                    loadAllPosts();
+                } else {
+                    alert('삭제 실패');
+                }
+            } catch (error) {
+                alert('서버 오류');
+            }
         }
         
-        function formatDate(ts) {
-            const d = new Date(ts);
-            return `2076.${String(d.getMonth()+1).padStart(2,'0')}.${String(d.getDate()).padStart(2,'0')}`;
+        function formatDate(timestamp) {
+            const d = new Date(timestamp);
+            return `${d.getMonth()+1}/${d.getDate()} ${d.getHours()}:${String(d.getMinutes()).padStart(2,'0')}`;
         }
         
         function escapeHtml(text) {
@@ -384,8 +333,6 @@
             div.textContent = text;
             return div.innerHTML;
         }
-        
-        document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
     </script>
 </body>
 </html>
