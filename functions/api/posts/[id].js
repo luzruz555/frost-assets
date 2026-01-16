@@ -1,5 +1,5 @@
 // /functions/api/posts/[id].js
-// Pages Functions - /api/posts/:id 엔드포인트 (캐싱 적용)
+// D1 버전 - 글 상세 조회 + 삭제
 
 export async function onRequest(context) {
     const { request, env, params } = context;
@@ -15,12 +15,10 @@ export async function onRequest(context) {
         return new Response(null, { headers: corsHeaders });
     }
 
-    // GET: 글 상세 조회
     if (request.method === 'GET') {
         return handleGetPost(postId, env, corsHeaders);
     }
 
-    // DELETE: 글 삭제
     if (request.method === 'DELETE') {
         return handleDeletePost(postId, request, env, corsHeaders);
     }
@@ -28,33 +26,49 @@ export async function onRequest(context) {
     return new Response('Method not allowed', { status: 405, headers: corsHeaders });
 }
 
-// 글 상세 조회 (캐싱 적용)
+// 글 상세 조회
 async function handleGetPost(postId, env, corsHeaders) {
     try {
-        const post = await env.FROST_POSTS.get(`post:${postId}`);
-        
+        // 글 정보
+        const post = await env.FROST_DB.prepare(`
+            SELECT id, type, title, author, content, is_notice as isNotice, created_at as createdAt
+            FROM posts WHERE id = ?
+        `).bind(postId).first();
+
         if (!post) {
-            return new Response(JSON.stringify({ error: 'Post not found' }), {
+            return new Response(JSON.stringify({ error: '글을 찾을 수 없습니다.' }), {
                 status: 404,
-                headers: { 
-                    ...corsHeaders, 
-                    'Content-Type': 'application/json',
-                    // 없는 글도 10초간 캐시 (반복 조회 방지)
-                    'Cache-Control': 'public, max-age=10'
-                }
+                headers: { ...corsHeaders, 'Content-Type': 'application/json' }
             });
         }
 
-        const parsed = JSON.parse(post);
-        delete parsed.password; // 비밀번호 숨김
+        // 댓글 조회
+        const comments = await env.FROST_DB.prepare(`
+            SELECT id, author, content, created_at as createdAt, edited_at as editedAt
+            FROM comments WHERE post_id = ? ORDER BY created_at ASC
+        `).bind(postId).all();
 
-        return new Response(JSON.stringify(parsed), {
-            headers: { 
-                ...corsHeaders, 
-                'Content-Type': 'application/json',
-                // 30초 캐시
-                'Cache-Control': 'public, max-age=30, s-maxage=30'
-            }
+        // 각 댓글의 대댓글 조회
+        const commentsWithReplies = await Promise.all(
+            comments.results.map(async (comment) => {
+                const replies = await env.FROST_DB.prepare(`
+                    SELECT id, author, content, created_at as createdAt, edited_at as editedAt
+                    FROM replies WHERE comment_id = ? ORDER BY created_at ASC
+                `).bind(comment.id).all();
+
+                return {
+                    ...comment,
+                    replies: replies.results
+                };
+            })
+        );
+
+        return new Response(JSON.stringify({
+            ...post,
+            isNotice: !!post.isNotice,
+            comments: commentsWithReplies
+        }), {
+            headers: { ...corsHeaders, 'Content-Type': 'application/json' }
         });
 
     } catch (error) {
@@ -69,34 +83,47 @@ async function handleGetPost(postId, env, corsHeaders) {
 async function handleDeletePost(postId, request, env, corsHeaders) {
     try {
         const { password } = await request.json();
-        
-        const post = await env.FROST_POSTS.get(`post:${postId}`);
+
+        if (!password) {
+            return new Response(JSON.stringify({ error: '비밀번호를 입력해주세요.' }), {
+                status: 400,
+                headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+            });
+        }
+
+        // 비밀번호 확인
+        const post = await env.FROST_DB.prepare(`
+            SELECT password FROM posts WHERE id = ?
+        `).bind(postId).first();
+
         if (!post) {
-            return new Response(JSON.stringify({ error: 'Post not found' }), {
+            return new Response(JSON.stringify({ error: '글을 찾을 수 없습니다.' }), {
                 status: 404,
                 headers: { ...corsHeaders, 'Content-Type': 'application/json' }
             });
         }
 
-        const parsed = JSON.parse(post);
-        
-        if (parsed.password !== password) {
-            return new Response(JSON.stringify({ error: 'Invalid password' }), {
+        if (post.password !== password) {
+            return new Response(JSON.stringify({ error: '비밀번호가 일치하지 않습니다.' }), {
                 status: 403,
                 headers: { ...corsHeaders, 'Content-Type': 'application/json' }
             });
         }
 
-        await env.FROST_POSTS.delete(`post:${postId}`);
+        // 대댓글 삭제
+        const comments = await env.FROST_DB.prepare(`
+            SELECT id FROM comments WHERE post_id = ?
+        `).bind(postId).all();
 
-        // 인덱스에서 제거
-        const indexKey = 'posts:index';
-        const existingIndex = await env.FROST_POSTS.get(indexKey);
-        if (existingIndex) {
-            const index = JSON.parse(existingIndex);
-            const newIndex = index.filter(p => p.id !== postId);
-            await env.FROST_POSTS.put(indexKey, JSON.stringify(newIndex));
+        for (const comment of comments.results) {
+            await env.FROST_DB.prepare(`DELETE FROM replies WHERE comment_id = ?`).bind(comment.id).run();
         }
+
+        // 댓글 삭제
+        await env.FROST_DB.prepare(`DELETE FROM comments WHERE post_id = ?`).bind(postId).run();
+
+        // 글 삭제
+        await env.FROST_DB.prepare(`DELETE FROM posts WHERE id = ?`).bind(postId).run();
 
         return new Response(JSON.stringify({ success: true }), {
             headers: { ...corsHeaders, 'Content-Type': 'application/json' }
