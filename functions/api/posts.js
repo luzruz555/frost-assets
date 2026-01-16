@@ -1,5 +1,5 @@
 // /functions/api/posts.js
-// Pages Functions - /api/posts 엔드포인트 (캐싱 + 공지 지원)
+// D1 버전 - 글 목록 조회 + 글 작성
 
 export async function onRequest(context) {
     const { request, env } = context;
@@ -26,7 +26,7 @@ export async function onRequest(context) {
     return new Response('Method not allowed', { status: 405, headers: corsHeaders });
 }
 
-// 글 저장 (승인된 글)
+// 글 저장
 async function handleSavePost(request, env, corsHeaders) {
     try {
         const auth = request.headers.get('Authorization');
@@ -38,61 +38,12 @@ async function handleSavePost(request, env, corsHeaders) {
         }
 
         const data = await request.json();
-        const { id, type, title, author, content, password, isNotice, approvedAt, approvedBy } = data;
+        const { id, type, title, author, content, password, isNotice } = data;
 
-        const post = {
-            id,
-            type,
-            title,
-            author,
-            content,
-            password,
-            isNotice: isNotice || false,
-            approvedAt,
-            approvedBy,
-            createdAt: Date.now(),
-            comments: [],
-            likes: 0
-        };
-
-        await env.FROST_POSTS.put(`post:${id}`, JSON.stringify(post));
-
-        // 인덱스 업데이트
-        const indexKey = 'posts:index';
-        const existingIndex = await env.FROST_POSTS.get(indexKey);
-        const index = existingIndex ? JSON.parse(existingIndex) : [];
-        
-        const indexEntry = {
-            id,
-            type,
-            title,
-            author,
-            isNotice: isNotice || false,
-            createdAt: post.createdAt,
-            commentCount: 0
-        };
-
-        // 공지면 맨 앞에, 일반 글이면 공지 다음에 추가
-        if (isNotice) {
-            index.unshift(indexEntry);
-        } else {
-            const firstNonNoticeIndex = index.findIndex(p => !p.isNotice);
-            if (firstNonNoticeIndex === -1) {
-                index.push(indexEntry);
-            } else {
-                index.splice(firstNonNoticeIndex, 0, indexEntry);
-            }
-        }
-
-        // 일반 글만 100개 제한
-        const notices = index.filter(p => p.isNotice);
-        const regularPosts = index.filter(p => !p.isNotice);
-        if (regularPosts.length > 100) {
-            regularPosts.pop();
-        }
-        const newIndex = [...notices, ...regularPosts];
-
-        await env.FROST_POSTS.put(indexKey, JSON.stringify(newIndex));
+        await env.FROST_DB.prepare(`
+            INSERT INTO posts (id, type, title, author, content, password, is_notice, created_at, comment_count)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, 0)
+        `).bind(id, type, title, author, content, password, isNotice ? 1 : 0, Date.now()).run();
 
         return new Response(JSON.stringify({ success: true, id }), {
             headers: { ...corsHeaders, 'Content-Type': 'application/json' }
@@ -106,50 +57,71 @@ async function handleSavePost(request, env, corsHeaders) {
     }
 }
 
-// 글 목록 조회 (캐싱 적용)
+// 글 목록 조회
 async function handleGetPosts(url, env, corsHeaders) {
     try {
         const page = parseInt(url.searchParams.get('page')) || 1;
         const limit = Math.min(parseInt(url.searchParams.get('limit')) || 15, 20);
         const type = url.searchParams.get('type');
+        const noticeOnly = url.searchParams.get('noticeOnly') === 'true';
 
-        const indexKey = 'posts:index';
-        const existingIndex = await env.FROST_POSTS.get(indexKey);
-        let index = existingIndex ? JSON.parse(existingIndex) : [];
+        // 공지 조회
+        const notices = await env.FROST_DB.prepare(`
+            SELECT id, type, title, author, is_notice as isNotice, created_at as createdAt, comment_count as commentCount
+            FROM posts WHERE is_notice = 1 ORDER BY created_at DESC
+        `).all();
 
-        // 공지와 일반 글 분리
-        let notices = index.filter(p => p.isNotice);
-        let regularPosts = index.filter(p => !p.isNotice);
+        // 일반 글 조회
+        let query = `SELECT id, type, title, author, is_notice as isNotice, created_at as createdAt, comment_count as commentCount FROM posts WHERE is_notice = 0`;
+        const params = [];
 
-        // 타입 필터링
         if (type) {
-            regularPosts = regularPosts.filter(p => p.type === type);
+            query += ` AND type = ?`;
+            params.push(type);
         }
 
-        // 페이지네이션
-        const total = regularPosts.length;
-        const totalPages = Math.ceil(total / limit);
-        const start = (page - 1) * limit;
-        const paginatedPosts = regularPosts.slice(start, start + limit);
+        // 총 개수
+        let countQuery = `SELECT COUNT(*) as total FROM posts WHERE is_notice = 0`;
+        if (type) {
+            countQuery += ` AND type = ?`;
+        }
+        const countResult = await env.FROST_DB.prepare(countQuery).bind(...params).first();
+        const total = countResult.total;
 
-        // 첫 페이지면 공지 포함
+        // 페이지네이션
+        const offset = (page - 1) * limit;
+        query += ` ORDER BY created_at DESC LIMIT ? OFFSET ?`;
+        params.push(limit, offset);
+
+        const postsResult = await env.FROST_DB.prepare(query).bind(...params).all();
+
+        const totalPages = Math.ceil(total / limit);
+
+        // 공지만 요청한 경우
+        if (noticeOnly) {
+            return new Response(JSON.stringify({
+                posts: notices.results.map(p => ({ ...p, isNotice: !!p.isNotice })),
+                total: notices.results.length,
+                page: 1,
+                totalPages: 1
+            }), {
+                headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+            });
+        }
+
+        // 1페이지면 공지 포함
         const posts = page === 1 
-            ? [...notices, ...paginatedPosts]
-            : paginatedPosts;
+            ? [...notices.results.map(p => ({ ...p, isNotice: true })), ...postsResult.results.map(p => ({ ...p, isNotice: false }))]
+            : postsResult.results.map(p => ({ ...p, isNotice: false }));
 
         return new Response(JSON.stringify({
             posts,
-            notices: notices.length,
+            notices: notices.results.length,
             total,
             page,
             totalPages
         }), {
-            headers: { 
-                ...corsHeaders, 
-                'Content-Type': 'application/json',
-                // 30초 캐시 - 브라우저가 30초간 KV 안 찌름
-                'Cache-Control': 'public, max-age=30, s-maxage=30'
-            }
+            headers: { ...corsHeaders, 'Content-Type': 'application/json' }
         });
 
     } catch (error) {
