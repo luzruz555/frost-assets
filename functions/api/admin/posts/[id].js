@@ -1,5 +1,5 @@
 // /functions/api/admin/posts/[id].js
-// 관리자 전용 - 글 삭제 API
+// D1 버전 - 관리자 글 삭제
 
 export async function onRequest(context) {
     const { request, env, params } = context;
@@ -15,53 +15,42 @@ export async function onRequest(context) {
         return new Response(null, { headers: corsHeaders });
     }
 
-    // 관리자 인증
-    const adminKey = request.headers.get('X-Admin-Key');
-    if (adminKey !== 'luzruz555') {
-        return new Response(JSON.stringify({ error: 'Unauthorized' }), {
-            status: 401,
-            headers: { ...corsHeaders, 'Content-Type': 'application/json' }
-        });
-    }
-
     if (request.method === 'DELETE') {
-        return handleAdminDelete(postId, env, corsHeaders);
-    }
-
-    return new Response('Method not allowed', { status: 405, headers: corsHeaders });
-}
-
-async function handleAdminDelete(postId, env, corsHeaders) {
-    try {
-        // 글 존재 확인
-        const post = await env.FROST_POSTS.get(`post:${postId}`);
-        if (!post) {
-            return new Response(JSON.stringify({ error: 'Post not found' }), {
-                status: 404,
+        const adminKey = request.headers.get('X-Admin-Key');
+        if (adminKey !== 'luzruz555') {
+            return new Response(JSON.stringify({ error: 'Unauthorized' }), {
+                status: 401,
                 headers: { ...corsHeaders, 'Content-Type': 'application/json' }
             });
         }
 
-        // KV에서 삭제
-        await env.FROST_POSTS.delete(`post:${postId}`);
+        try {
+            // 대댓글 삭제
+            const comments = await env.FROST_DB.prepare(`
+                SELECT id FROM comments WHERE post_id = ?
+            `).bind(postId).all();
 
-        // 인덱스에서 제거
-        const indexKey = 'posts:index';
-        const existingIndex = await env.FROST_POSTS.get(indexKey);
-        if (existingIndex) {
-            const index = JSON.parse(existingIndex);
-            const newIndex = index.filter(p => p.id !== postId);
-            await env.FROST_POSTS.put(indexKey, JSON.stringify(newIndex));
+            for (const comment of comments.results) {
+                await env.FROST_DB.prepare(`DELETE FROM replies WHERE comment_id = ?`).bind(comment.id).run();
+            }
+
+            // 댓글 삭제
+            await env.FROST_DB.prepare(`DELETE FROM comments WHERE post_id = ?`).bind(postId).run();
+
+            // 글 삭제
+            await env.FROST_DB.prepare(`DELETE FROM posts WHERE id = ?`).bind(postId).run();
+
+            return new Response(JSON.stringify({ success: true }), {
+                headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+            });
+
+        } catch (error) {
+            return new Response(JSON.stringify({ error: error.message }), {
+                status: 500,
+                headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+            });
         }
-
-        return new Response(JSON.stringify({ success: true }), {
-            headers: { ...corsHeaders, 'Content-Type': 'application/json' }
-        });
-
-    } catch (error) {
-        return new Response(JSON.stringify({ error: error.message }), {
-            status: 500,
-            headers: { ...corsHeaders, 'Content-Type': 'application/json' }
-        });
     }
+
+    return new Response('Method not allowed', { status: 405, headers: corsHeaders });
 }
