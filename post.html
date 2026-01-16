@@ -428,8 +428,8 @@
         
         let currentPost = null;
         let isSubmittingComment = false;
-        let editTarget = { commentIndex: null, replyIndex: null };
-        let deleteTarget = { commentIndex: null, replyIndex: null };
+        let editTarget = { commentId: null, replyId: null, content: '' };
+        let deleteTarget = { commentId: null, replyId: null };
         
         if (!postId) location.href = 'index.html';
         
@@ -486,8 +486,8 @@
                 return;
             }
             
-            list.innerHTML = comments.map((c, i) => `
-                <div class="comment-item" data-index="${i}">
+            list.innerHTML = comments.map((c) => `
+                <div class="comment-item" data-id="${c.id}">
                     <div class="comment-meta">
                         <span class="comment-author">${escapeHtml(c.author)}</span>
                         <span class="comment-date">${formatDate(c.createdAt)}</span>
@@ -495,14 +495,14 @@
                     </div>
                     <div class="comment-content">${parseMarkdownImages(c.content)}</div>
                     <div class="comment-actions">
-                        <button onclick="toggleReplyForm(${i})">답글</button>
-                        <button onclick="showEditCommentModal(${i})">수정</button>
-                        <button onclick="showDeleteCommentModal(${i})">삭제</button>
+                        <button onclick="toggleReplyForm('${c.id}')">답글</button>
+                        <button onclick="showEditCommentModal('${c.id}', null, '${escapeAttr(c.content)}')">수정</button>
+                        <button onclick="showDeleteCommentModal('${c.id}', null)">삭제</button>
                     </div>
                     
                     ${c.replies && c.replies.length > 0 ? `
                         <div class="replies">
-                            ${c.replies.map((r, ri) => `
+                            ${c.replies.map((r) => `
                                 <div class="reply-item">
                                     <div class="comment-meta">
                                         <span class="comment-author">↳ ${escapeHtml(r.author)}</span>
@@ -511,37 +511,42 @@
                                     </div>
                                     <div class="comment-content">${parseMarkdownImages(r.content)}</div>
                                     <div class="comment-actions">
-                                        <button onclick="showEditCommentModal(${i}, ${ri})">수정</button>
-                                        <button onclick="showDeleteCommentModal(${i}, ${ri})">삭제</button>
+                                        <button onclick="showEditCommentModal('${c.id}', '${r.id}', '${escapeAttr(r.content)}')">수정</button>
+                                        <button onclick="showDeleteCommentModal('${c.id}', '${r.id}')">삭제</button>
                                     </div>
                                 </div>
                             `).join('')}
                         </div>
                     ` : ''}
                     
-                    <div class="reply-form" id="replyForm-${i}">
+                    <div class="reply-form" id="replyForm-${c.id}">
                         <div class="reply-form-row">
-                            <input type="text" id="replyAuthor-${i}" placeholder="닉네임" maxlength="20">
-                            <input type="password" id="replyPassword-${i}" placeholder="비밀번호" maxlength="20">
+                            <input type="text" id="replyAuthor-${c.id}" placeholder="닉네임" maxlength="20">
+                            <input type="password" id="replyPassword-${c.id}" placeholder="비밀번호" maxlength="20">
                         </div>
-                        <textarea id="replyContent-${i}" placeholder="답글을 입력하세요..." maxlength="300"></textarea>
-                        <button onclick="submitReply(${i})">등록</button>
+                        <textarea id="replyContent-${c.id}" placeholder="답글을 입력하세요..." maxlength="300"></textarea>
+                        <button onclick="submitReply('${c.id}')">등록</button>
                     </div>
                 </div>
             `).join('');
         }
         
+        // 속성용 이스케이프
+        function escapeAttr(text) {
+            return text.replace(/'/g, "\\'").replace(/\n/g, "\\n");
+        }
+        
         // 대댓글 폼 토글
-        function toggleReplyForm(index) {
-            const form = document.getElementById(`replyForm-${index}`);
+        function toggleReplyForm(commentId) {
+            const form = document.getElementById(`replyForm-${commentId}`);
             form.classList.toggle('active');
         }
         
         // 대댓글 제출
-        async function submitReply(commentIndex) {
-            const author = document.getElementById(`replyAuthor-${commentIndex}`).value.trim();
-            const password = document.getElementById(`replyPassword-${commentIndex}`).value.trim();
-            const content = document.getElementById(`replyContent-${commentIndex}`).value.trim();
+        async function submitReply(parentCommentId) {
+            const author = document.getElementById(`replyAuthor-${parentCommentId}`).value.trim();
+            const password = document.getElementById(`replyPassword-${parentCommentId}`).value.trim();
+            const content = document.getElementById(`replyContent-${parentCommentId}`).value.trim();
             
             if (!author || !password || !content) {
                 alert('모든 필드를 입력해주세요.');
@@ -552,12 +557,12 @@
                 const response = await fetch(`${API_URL}/api/posts/${postId}/comments`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ author, password, content, parentIndex: commentIndex })
+                    body: JSON.stringify({ author, password, content, parentCommentId })
                 });
                 
                 if (response.ok) {
-                    document.getElementById(`replyContent-${commentIndex}`).value = '';
-                    document.getElementById(`replyForm-${commentIndex}`).classList.remove('active');
+                    document.getElementById(`replyContent-${parentCommentId}`).value = '';
+                    document.getElementById(`replyForm-${parentCommentId}`).classList.remove('active');
                     loadPost();
                 } else {
                     const err = await response.json();
@@ -620,18 +625,15 @@
             document.getElementById('deletePassword').focus();
         }
         
-        function showEditCommentModal(commentIndex, replyIndex = null) {
-            editTarget = { commentIndex, replyIndex };
-            const comment = replyIndex !== null 
-                ? currentPost.comments[commentIndex].replies[replyIndex]
-                : currentPost.comments[commentIndex];
-            document.getElementById('editCommentContent').value = comment.content;
+        function showEditCommentModal(commentId, replyId, content) {
+            editTarget = { commentId, replyId };
+            document.getElementById('editCommentContent').value = content.replace(/\\n/g, '\n');
             document.getElementById('editCommentModal').classList.add('active');
             document.getElementById('editCommentPassword').focus();
         }
         
-        function showDeleteCommentModal(commentIndex, replyIndex = null) {
-            deleteTarget = { commentIndex, replyIndex };
+        function showDeleteCommentModal(commentId, replyId) {
+            deleteTarget = { commentId, replyId };
             document.getElementById('deleteCommentModal').classList.add('active');
             document.getElementById('deleteCommentPassword').focus();
         }
@@ -675,8 +677,8 @@
                     method: 'PUT',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
-                        commentIndex: editTarget.commentIndex,
-                        replyIndex: editTarget.replyIndex,
+                        commentId: editTarget.commentId,
+                        replyId: editTarget.replyId,
                         password,
                         newContent
                     })
@@ -705,8 +707,8 @@
                     method: 'DELETE',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
-                        commentIndex: deleteTarget.commentIndex,
-                        replyIndex: deleteTarget.replyIndex,
+                        commentId: deleteTarget.commentId,
+                        replyId: deleteTarget.replyId,
                         password
                     })
                 });
