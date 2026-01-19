@@ -17,148 +17,130 @@
             padding: 20px;
         }
         
-        .container { max-width: 900px; margin: 0 auto; }
+        .container { max-width: 800px; margin: 0 auto; }
         
         .header {
-            border: 2px solid #D4743C;
-            padding: 15px 20px;
+            text-align: center;
+            padding: 20px 0;
             margin-bottom: 20px;
+            border-bottom: 1px solid #222;
         }
-        .header h1 { font-size: 14px; font-weight: 500; }
-        .header .path { color: #888; font-size: 12px; margin-top: 5px; }
+        .header h1 { font-size: 16px; font-weight: 500; }
         
         .back-btn {
             display: inline-block;
-            color: #D4743C;
+            color: #555;
             text-decoration: none;
             padding: 8px 15px;
-            border: 1px solid #333;
-            font-size: 12px;
+            border: 1px solid #222;
+            font-size: 11px;
             margin-bottom: 20px;
             transition: all 0.2s;
         }
-        .back-btn:hover { border-color: #D4743C; }
+        .back-btn:hover { border-color: #444; color: #888; }
         
-        .terminal {
-            border: 2px solid #D4743C;
+        .post-card {
+            border: 1px solid #222;
             background: #0d0d0d;
             margin-bottom: 20px;
         }
-        .terminal-header {
-            background: #D4743C;
-            color: #0a0a0a;
-            padding: 8px 15px;
-            font-size: 12px;
-            display: flex;
-            justify-content: space-between;
+        .post-header {
+            padding: 15px;
+            border-bottom: 1px solid #1a1a1a;
         }
-        .terminal-body { padding: 20px; }
-        
         .post-meta {
             display: flex;
-            gap: 20px;
-            margin-bottom: 20px;
-            padding-bottom: 15px;
-            border-bottom: 1px solid #222;
-            flex-wrap: wrap;
+            gap: 15px;
+            margin-bottom: 12px;
+            font-size: 11px;
+            color: #555;
             align-items: center;
+            flex-wrap: wrap;
         }
-        .post-meta span { font-size: 12px; color: #666; }
-        .post-meta span strong { color: #888; }
         
-        .post-type { font-size: 11px; padding: 3px 8px; border: 1px solid; }
-        .post-type.free { color: #888; border-color: #888; }
+        .post-type { font-size: 10px; padding: 3px 8px; border: 1px solid; }
+        .post-type.free { color: #666; border-color: #333; }
         .post-type.info { color: #4ade80; border-color: #4ade80; }
         .post-type.trade { color: #60a5fa; border-color: #60a5fa; }
-        .post-type.help { color: #f472b6; border-color: #f472b6; }
-        .post-type.notice { color: #FFD700; border-color: #FFD700; background: rgba(255, 215, 0, 0.1); }
+        .post-type.help { color: #c084fc; border-color: #c084fc; }
+        .post-type.notice { color: #FFD700; border-color: #FFD700; }
         
-        .post-title { font-size: 18px; color: #ccc; margin-bottom: 20px; }
-        .post-content {
+        .post-title { font-size: 18px; color: #ccc; }
+        
+        .post-body {
+            padding: 20px 15px;
             font-size: 14px;
-            color: #aaa;
+            color: #999;
             line-height: 1.8;
             word-break: break-word;
         }
-        .post-content img { max-width: 100%; height: auto; margin: 10px 0; border: 1px solid #333; }
-        .post-content pre {
-            background: #1a1a1a;
-            border: 1px solid #333;
+        .post-body img { max-width: 100%; height: auto; margin: 10px 0; border: 1px solid #222; }
+        .post-body pre {
+            background: #111;
+            border: 1px solid #222;
             padding: 15px;
             margin: 10px 0;
             overflow-x: auto;
-            font-family: 'IBM Plex Mono', monospace;
+            color: #2dd4bf;
             font-size: 13px;
-            color: #4ade80;
         }
-        .post-content code {
-            background: #1a1a1a;
+        .post-body code {
+            background: #111;
             padding: 2px 6px;
-            color: #4ade80;
+            color: #2dd4bf;
             font-size: 13px;
         }
-        .post-content pre code {
-            background: none;
-            padding: 0;
-        }
-        .post-content h1, .post-content h2, .post-content h3 {
-            color: #D4743C;
-            margin: 15px 0 10px 0;
-        }
-        .post-content h1 { font-size: 20px; }
-        .post-content h2 { font-size: 18px; }
-        .post-content h3 { font-size: 16px; }
-        .post-content em { color: #f472b6; font-style: italic; }
+        .post-body pre code { background: none; padding: 0; }
+        .post-body h1, .post-body h2, .post-body h3 { color: #D4743C; margin: 15px 0 10px 0; }
+        .post-body h1 { font-size: 20px; }
+        .post-body h2 { font-size: 18px; }
+        .post-body h3 { font-size: 16px; }
+        .post-body em { color: #c084fc; font-style: italic; }
         
         .post-actions {
-            margin-top: 20px;
-            padding-top: 15px;
-            border-top: 1px solid #222;
+            padding: 15px;
+            border-top: 1px solid #1a1a1a;
             display: flex;
             gap: 10px;
             align-items: center;
             flex-wrap: wrap;
         }
-        .post-actions button {
+        .btn {
             background: transparent;
-            border: 1px solid #333;
-            color: #666;
+            border: 1px solid #222;
+            color: #555;
             padding: 8px 15px;
             font-family: 'IBM Plex Mono', monospace;
             font-size: 11px;
             cursor: pointer;
             transition: all 0.2s;
         }
-        .post-actions button:hover:not(:disabled) { border-color: #D4743C; color: #D4743C; }
-        .post-actions button:disabled { opacity: 0.5; cursor: not-allowed; }
+        .btn:hover:not(:disabled) { border-color: #444; color: #888; }
+        .btn:disabled { opacity: 0.5; cursor: not-allowed; }
         
         .like-btn {
-            background: transparent;
-            border: 1px solid #f472b6 !important;
-            color: #f472b6 !important;
-            display: flex;
-            align-items: center;
-            gap: 5px;
+            border-color: #2dd4bf !important;
+            color: #2dd4bf !important;
         }
-        .like-btn:hover:not(:disabled) { background: rgba(244, 114, 182, 0.1) !important; }
-        .like-count { font-size: 14px; color: #f472b6; margin-left: 10px; }
+        .like-btn:hover:not(:disabled) { background: rgba(45, 212, 191, 0.1) !important; }
+        .like-count { font-size: 14px; color: #2dd4bf; }
         
-        /* 댓글 섹션 */
+        /* 댓글 */
         .comments-section {
-            border: 2px solid #333;
+            border: 1px solid #222;
             background: #0d0d0d;
         }
         .comments-header {
-            background: #1a1a1a;
-            padding: 10px 15px;
-            font-size: 12px;
-            border-bottom: 1px solid #333;
+            padding: 12px 15px;
+            font-size: 11px;
+            border-bottom: 1px solid #1a1a1a;
+            color: #555;
         }
-        .comments-list { max-height: 600px; overflow-y: auto; }
+        .comments-list { max-height: 500px; overflow-y: auto; }
         
         .comment-item {
             padding: 15px;
-            border-bottom: 1px solid #1a1a1a;
+            border-bottom: 1px solid #111;
         }
         .comment-item:last-child { border-bottom: none; }
         
@@ -166,16 +148,16 @@
             display: flex;
             gap: 10px;
             margin-bottom: 8px;
-            font-size: 11px;
+            font-size: 10px;
             align-items: center;
             flex-wrap: wrap;
         }
         .comment-author { color: #D4743C; }
-        .comment-date { color: #444; }
-        .edited-mark { color: #666; font-size: 10px; }
+        .comment-date { color: #333; }
+        .edited-mark { color: #444; font-size: 9px; }
         
-        .comment-content { font-size: 13px; color: #999; line-height: 1.6; }
-        .comment-content img { max-width: 100%; max-height: 300px; height: auto; margin: 5px 0; border: 1px solid #333; }
+        .comment-content { font-size: 13px; color: #888; line-height: 1.6; }
+        .comment-content img { max-width: 100%; max-height: 200px; margin: 5px 0; border: 1px solid #222; }
         
         .comment-actions {
             margin-top: 8px;
@@ -185,46 +167,36 @@
         .comment-actions button {
             background: none;
             border: none;
-            color: #555;
+            color: #333;
             font-size: 10px;
             cursor: pointer;
             padding: 2px 6px;
             font-family: 'IBM Plex Mono', monospace;
         }
-        .comment-actions button:hover { color: #D4743C; }
+        .comment-actions button:hover { color: #666; }
         
-        /* 대댓글 */
         .replies {
             margin-top: 10px;
-            margin-left: 20px;
-            padding-left: 15px;
-            border-left: 2px solid #222;
+            margin-left: 15px;
+            padding-left: 12px;
+            border-left: 1px solid #1a1a1a;
         }
-        .reply-item {
-            padding: 10px 0;
-            border-bottom: 1px solid #1a1a1a;
-        }
-        .reply-item:last-child { border-bottom: none; }
+        .reply-item { padding: 10px 0; }
         .reply-item .comment-author { color: #60a5fa; }
         
-        /* 대댓글 폼 */
         .reply-form {
             margin-top: 10px;
-            margin-left: 20px;
+            margin-left: 15px;
             padding: 10px;
-            background: #111;
+            background: #0a0a0a;
             display: none;
         }
         .reply-form.active { display: block; }
-        .reply-form-row {
-            display: flex;
-            gap: 5px;
-            margin-bottom: 5px;
-        }
+        .reply-form-row { display: flex; gap: 5px; margin-bottom: 5px; }
         .reply-form input {
             width: 80px;
-            background: #1a1a1a;
-            border: 1px solid #333;
+            background: #111;
+            border: 1px solid #222;
             color: #D4743C;
             padding: 8px;
             font-family: 'IBM Plex Mono', monospace;
@@ -233,9 +205,9 @@
         }
         .reply-form textarea {
             width: 100%;
-            background: #1a1a1a;
-            border: 1px solid #333;
-            color: #ccc;
+            background: #111;
+            border: 1px solid #222;
+            color: #999;
             padding: 8px;
             font-family: 'IBM Plex Mono', monospace;
             font-size: 11px;
@@ -245,7 +217,7 @@
             margin-bottom: 5px;
         }
         .reply-form button {
-            background: #333;
+            background: #222;
             border: none;
             color: #D4743C;
             padding: 6px 12px;
@@ -253,70 +225,61 @@
             font-size: 10px;
             cursor: pointer;
         }
-        .reply-form button:hover { background: #444; }
         
         .comment-form {
             padding: 15px;
-            border-top: 1px solid #333;
+            border-top: 1px solid #1a1a1a;
         }
-        .comment-form-row {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 10px;
-        }
+        .comment-form-row { display: flex; gap: 10px; margin-bottom: 10px; }
         .comment-form input {
-            background: #1a1a1a;
-            border: 1px solid #333;
+            background: #111;
+            border: 1px solid #222;
             color: #D4743C;
             padding: 10px;
             font-family: 'IBM Plex Mono', monospace;
-            font-size: 12px;
+            font-size: 11px;
             outline: none;
             flex: 1;
         }
-        .comment-form input:focus { border-color: #D4743C; }
         .comment-form textarea {
             width: 100%;
-            background: #1a1a1a;
-            border: 1px solid #333;
-            color: #ccc;
+            background: #111;
+            border: 1px solid #222;
+            color: #999;
             padding: 10px;
             font-family: 'IBM Plex Mono', monospace;
-            font-size: 12px;
+            font-size: 11px;
             outline: none;
             resize: none;
             height: 60px;
             margin-bottom: 10px;
         }
-        .comment-form textarea:focus { border-color: #D4743C; }
         .comment-form button {
             background: #D4743C;
             border: none;
             color: #0a0a0a;
             padding: 10px 20px;
             font-family: 'IBM Plex Mono', monospace;
-            font-size: 12px;
+            font-size: 11px;
             cursor: pointer;
-            transition: all 0.2s;
         }
-        .comment-form button:hover:not(:disabled) { background: #e8854a; }
         .comment-form button:disabled { opacity: 0.5; cursor: not-allowed; }
         
         .no-comments {
             padding: 30px;
             text-align: center;
-            color: #444;
-            font-size: 12px;
+            color: #333;
+            font-size: 11px;
         }
         
-        .image-hint {
-            font-size: 10px;
-            color: #444;
-            padding: 5px 15px;
-            border-top: 1px dashed #222;
+        .hint {
+            font-size: 9px;
+            color: #333;
+            padding: 8px 15px;
+            border-top: 1px dashed #1a1a1a;
         }
         
-        .loading { text-align: center; padding: 50px; color: #666; }
+        .loading { text-align: center; padding: 50px; color: #444; }
         @keyframes blink { 0%, 50% { opacity: 1; } 51%, 100% { opacity: 0; } }
         .blink { animation: blink 1s infinite; }
         
@@ -333,41 +296,37 @@
         }
         .modal.active { display: flex; }
         .modal-content {
-            border: 2px solid #D4743C;
+            border: 1px solid #D4743C;
             background: #0d0d0d;
             padding: 20px;
             max-width: 400px;
             width: 90%;
         }
-        .modal-content h3 { font-size: 14px; margin-bottom: 15px; }
+        .modal-content h3 { font-size: 13px; margin-bottom: 15px; }
         .modal-content input, .modal-content textarea {
             width: 100%;
-            background: #1a1a1a;
-            border: 1px solid #333;
+            background: #111;
+            border: 1px solid #222;
             color: #D4743C;
             padding: 10px;
             font-family: 'IBM Plex Mono', monospace;
             margin-bottom: 10px;
             outline: none;
         }
-        .modal-content textarea {
-            color: #ccc;
-            height: 100px;
-            resize: none;
-        }
+        .modal-content textarea { color: #999; height: 100px; resize: none; }
         .modal-buttons { display: flex; gap: 10px; }
         .modal-buttons button {
             flex: 1;
             padding: 10px;
             font-family: 'IBM Plex Mono', monospace;
-            font-size: 12px;
+            font-size: 11px;
             cursor: pointer;
             border: 1px solid #D4743C;
             background: transparent;
             color: #D4743C;
         }
         .modal-buttons button.danger { background: #D4743C; color: #0a0a0a; }
-        .modal-buttons button.edit { background: #60a5fa; border-color: #60a5fa; color: #0a0a0a; }
+        .modal-buttons button.primary { background: #60a5fa; border-color: #60a5fa; color: #0a0a0a; }
         
         @media (max-width: 600px) {
             .comment-form-row { flex-direction: column; }
@@ -378,32 +337,27 @@
 <body>
     <div class="container">
         <div class="header">
-            <h1>FROST_COMMUNITY v2.1.7 // POST_VIEWER</h1>
-            <div class="path">C:\FROST\COMMUNITY\VIEW\</div>
+            <h1>FROST_COMMUNITY // POST</h1>
         </div>
         
-        <a href="index.html" class="back-btn">[ ← BACK_TO_LIST ]</a>
+        <a href="index.html" class="back-btn">← BACK</a>
         
-        <div class="terminal">
-            <div class="terminal-header">
-                <span>VIEW_POST.exe</span>
-                <span id="postId"></span>
-            </div>
-            <div class="terminal-body">
-                <div class="loading" id="loading">LOADING<span class="blink">_</span></div>
-                <div id="postContent" style="display:none;">
+        <div class="post-card">
+            <div class="loading" id="loading">LOADING<span class="blink">_</span></div>
+            <div id="postContent" style="display:none;">
+                <div class="post-header">
                     <div class="post-meta">
                         <span class="post-type" id="postType"></span>
-                        <span><strong>작성자:</strong> <span id="postAuthor"></span></span>
-                        <span><strong>작성일:</strong> <span id="postDate"></span></span>
+                        <span id="postAuthor"></span>
+                        <span id="postDate"></span>
                     </div>
                     <h2 class="post-title" id="postTitle"></h2>
-                    <div class="post-content" id="postBody"></div>
-                    <div class="post-actions">
-                        <button class="like-btn" id="likeBtn" onclick="likePost()">♥ 추천</button>
-                        <span class="like-count" id="likeCount">0</span>
-                        <button onclick="showDeleteModal()">[ DELETE ]</button>
-                    </div>
+                </div>
+                <div class="post-body" id="postBody"></div>
+                <div class="post-actions">
+                    <button class="btn like-btn" id="likeBtn" onclick="likePost()">♥ 추천</button>
+                    <span class="like-count" id="likeCount">0</span>
+                    <button class="btn" onclick="showDeleteModal()">삭제</button>
                 </div>
             </div>
         </div>
@@ -416,7 +370,7 @@
             <div class="comments-list" id="commentsList">
                 <div class="no-comments">아직 댓글이 없습니다.</div>
             </div>
-            <div class="image-hint">TIP: 이미지 ![설명](URL) | 코드블럭 ``` | 큰글씨 # | 기울임 *텍스트*</div>
+            <div class="hint">마크다운: # 큰글씨 | *기울임* | ```코드``` | ![이미지](URL)</div>
             <form class="comment-form" id="commentForm">
                 <div class="comment-form-row">
                     <input type="text" id="commentAuthor" placeholder="닉네임" maxlength="20" required>
@@ -432,7 +386,7 @@
     <div class="modal" id="deleteModal">
         <div class="modal-content">
             <h3>글 삭제</h3>
-            <input type="password" id="deletePassword" placeholder="비밀번호 입력">
+            <input type="password" id="deletePassword" placeholder="비밀번호">
             <div class="modal-buttons">
                 <button onclick="closeModal('deleteModal')">취소</button>
                 <button class="danger" onclick="deletePost()">삭제</button>
@@ -444,11 +398,11 @@
     <div class="modal" id="editCommentModal">
         <div class="modal-content">
             <h3>댓글 수정</h3>
-            <input type="password" id="editCommentPassword" placeholder="비밀번호 입력">
+            <input type="password" id="editCommentPassword" placeholder="비밀번호">
             <textarea id="editCommentContent" placeholder="수정할 내용"></textarea>
             <div class="modal-buttons">
                 <button onclick="closeModal('editCommentModal')">취소</button>
-                <button class="edit" onclick="editComment()">수정</button>
+                <button class="primary" onclick="editComment()">수정</button>
             </div>
         </div>
     </div>
@@ -457,7 +411,7 @@
     <div class="modal" id="deleteCommentModal">
         <div class="modal-content">
             <h3>댓글 삭제</h3>
-            <input type="password" id="deleteCommentPassword" placeholder="비밀번호 입력">
+            <input type="password" id="deleteCommentPassword" placeholder="비밀번호">
             <div class="modal-buttons">
                 <button onclick="closeModal('deleteCommentModal')">취소</button>
                 <button class="danger" onclick="deleteComment()">삭제</button>
@@ -472,40 +426,25 @@
         
         let currentPost = null;
         let isSubmittingComment = false;
-        let editTarget = { commentId: null, replyId: null, content: '' };
+        let editTarget = { commentId: null, replyId: null };
         let deleteTarget = { commentId: null, replyId: null };
         
         if (!postId) location.href = 'index.html';
         
-        // 마크다운 파싱
         function parseMarkdown(text) {
             let parsed = escapeHtml(text);
-            
-            // 코드블럭 ```
             parsed = parsed.replace(/```([\s\S]*?)```/g, '<pre><code>$1</code></pre>');
-            
-            // 인라인 코드 `
             parsed = parsed.replace(/`([^`]+)`/g, '<code>$1</code>');
-            
-            // 헤더 ### ## #
             parsed = parsed.replace(/^### (.+)$/gm, '<h3>$1</h3>');
             parsed = parsed.replace(/^## (.+)$/gm, '<h2>$1</h2>');
             parsed = parsed.replace(/^# (.+)$/gm, '<h1>$1</h1>');
-            
-            // 기울임 *텍스트*
             parsed = parsed.replace(/\*([^*]+)\*/g, '<em>$1</em>');
-            
-            // 이미지 ![alt](url)
             parsed = parsed.replace(/!\[([^\]]*)\]\((https?:\/\/[^)]+)\)/g, 
                 '<img src="$2" alt="$1" onerror="this.style.display=\'none\'">');
-            
-            // 줄바꿈
             parsed = parsed.replace(/\n/g, '<br>');
-            
             return parsed;
         }
         
-        // 글 로드
         async function loadPost() {
             try {
                 const response = await fetch(`${API_URL}/api/posts/${postId}`);
@@ -522,7 +461,6 @@
                 const displayType = post.isNotice ? '공지' : (typeLabel[post.type] || post.type);
                 const typeClass = post.isNotice ? 'notice' : post.type;
                 
-                document.getElementById('postId').textContent = `[${postId.substring(0, 15)}...]`;
                 document.getElementById('postType').textContent = displayType;
                 document.getElementById('postType').className = `post-type ${typeClass}`;
                 document.getElementById('postAuthor').innerHTML = formatAuthor(post.author);
@@ -537,21 +475,17 @@
             }
         }
         
-        // 추천
         async function likePost() {
             const btn = document.getElementById('likeBtn');
             btn.disabled = true;
             
             try {
-                const response = await fetch(`${API_URL}/api/posts/${postId}`, {
-                    method: 'POST'
-                });
-                
+                const response = await fetch(`${API_URL}/api/posts/${postId}`, { method: 'POST' });
                 const result = await response.json();
                 
                 if (response.ok) {
                     document.getElementById('likeCount').textContent = result.likes;
-                    btn.textContent = '♥ 추천완료';
+                    btn.textContent = '♥ 완료';
                 } else {
                     alert(result.error || '추천 실패');
                     btn.disabled = false;
@@ -562,12 +496,10 @@
             }
         }
         
-        // 총 댓글 수
         function countAllComments(comments) {
             return comments.reduce((sum, c) => sum + 1 + (c.replies?.length || 0), 0);
         }
         
-        // 댓글 렌더링
         function renderComments(comments) {
             const list = document.getElementById('commentsList');
             document.getElementById('commentCount').textContent = countAllComments(comments);
@@ -615,34 +547,27 @@
                             <input type="text" id="replyAuthor-${c.id}" placeholder="닉네임" maxlength="20">
                             <input type="password" id="replyPassword-${c.id}" placeholder="비밀번호" maxlength="20">
                         </div>
-                        <textarea id="replyContent-${c.id}" placeholder="답글을 입력하세요..." maxlength="300"></textarea>
+                        <textarea id="replyContent-${c.id}" placeholder="답글..." maxlength="300"></textarea>
                         <button onclick="submitReply('${c.id}')">등록</button>
                     </div>
                 </div>
             `).join('');
         }
         
-        // 속성용 이스케이프
         function escapeAttr(text) {
             return text.replace(/'/g, "\\'").replace(/\n/g, "\\n");
         }
         
-        // 대댓글 폼 토글
         function toggleReplyForm(commentId) {
-            const form = document.getElementById(`replyForm-${commentId}`);
-            form.classList.toggle('active');
+            document.getElementById(`replyForm-${commentId}`).classList.toggle('active');
         }
         
-        // 대댓글 제출
         async function submitReply(parentCommentId) {
             const author = document.getElementById(`replyAuthor-${parentCommentId}`).value.trim();
             const password = document.getElementById(`replyPassword-${parentCommentId}`).value.trim();
             const content = document.getElementById(`replyContent-${parentCommentId}`).value.trim();
             
-            if (!author || !password || !content) {
-                alert('모든 필드를 입력해주세요.');
-                return;
-            }
+            if (!author || !password || !content) return alert('모든 필드를 입력해주세요.');
             
             try {
                 const response = await fetch(`${API_URL}/api/posts/${postId}/comments`, {
@@ -657,14 +582,11 @@
                     loadPost();
                 } else {
                     const err = await response.json();
-                    alert(err.error || '답글 작성 실패');
+                    alert(err.error || '실패');
                 }
-            } catch (error) {
-                alert('서버 연결 실패');
-            }
+            } catch (e) { alert('서버 오류'); }
         }
         
-        // 댓글 작성
         document.getElementById('commentForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             if (isSubmittingComment) return;
@@ -697,11 +619,10 @@
                     loadPost();
                 } else {
                     const err = await response.json();
-                    alert(err.error || '댓글 작성 실패');
+                    alert(err.error || '실패');
                 }
-            } catch (error) {
-                alert('서버 연결 실패');
-            } finally {
+            } catch (e) { alert('서버 오류'); }
+            finally {
                 setTimeout(() => {
                     isSubmittingComment = false;
                     btn.textContent = '등록';
@@ -710,33 +631,28 @@
             }
         });
         
-        // 모달 관련
         function showDeleteModal() {
             document.getElementById('deleteModal').classList.add('active');
-            document.getElementById('deletePassword').focus();
         }
         
         function showEditCommentModal(commentId, replyId, content) {
             editTarget = { commentId, replyId };
             document.getElementById('editCommentContent').value = content.replace(/\\n/g, '\n');
             document.getElementById('editCommentModal').classList.add('active');
-            document.getElementById('editCommentPassword').focus();
         }
         
         function showDeleteCommentModal(commentId, replyId) {
             deleteTarget = { commentId, replyId };
             document.getElementById('deleteCommentModal').classList.add('active');
-            document.getElementById('deleteCommentPassword').focus();
         }
         
         function closeModal(id) {
             document.getElementById(id).classList.remove('active');
         }
         
-        // 글 삭제
         async function deletePost() {
             const password = document.getElementById('deletePassword').value;
-            if (!password) { alert('비밀번호를 입력하세요.'); return; }
+            if (!password) return alert('비밀번호를 입력하세요.');
             
             try {
                 const response = await fetch(`${API_URL}/api/posts/${postId}`, {
@@ -746,22 +662,19 @@
                 });
                 
                 if (response.ok) {
-                    alert('글이 삭제되었습니다.');
+                    alert('삭제되었습니다.');
                     location.href = 'index.html';
                 } else {
                     const err = await response.json();
-                    alert(err.error || '삭제 실패');
+                    alert(err.error || '실패');
                 }
-            } catch (error) {
-                alert('서버 연결 실패');
-            }
+            } catch (e) { alert('서버 오류'); }
         }
         
-        // 댓글 수정
         async function editComment() {
             const password = document.getElementById('editCommentPassword').value;
             const newContent = document.getElementById('editCommentContent').value.trim();
-            if (!password || !newContent) { alert('비밀번호와 내용을 입력하세요.'); return; }
+            if (!password || !newContent) return alert('비밀번호와 내용을 입력하세요.');
             
             try {
                 const response = await fetch(`${API_URL}/api/posts/${postId}/comments`, {
@@ -776,22 +689,18 @@
                 });
                 
                 if (response.ok) {
-                    alert('수정되었습니다.');
                     closeModal('editCommentModal');
                     loadPost();
                 } else {
                     const err = await response.json();
-                    alert(err.error || '수정 실패');
+                    alert(err.error || '실패');
                 }
-            } catch (error) {
-                alert('서버 연결 실패');
-            }
+            } catch (e) { alert('서버 오류'); }
         }
         
-        // 댓글 삭제
         async function deleteComment() {
             const password = document.getElementById('deleteCommentPassword').value;
-            if (!password) { alert('비밀번호를 입력하세요.'); return; }
+            if (!password) return alert('비밀번호를 입력하세요.');
             
             try {
                 const response = await fetch(`${API_URL}/api/posts/${postId}/comments`, {
@@ -805,19 +714,15 @@
                 });
                 
                 if (response.ok) {
-                    alert('삭제되었습니다.');
                     closeModal('deleteCommentModal');
                     loadPost();
                 } else {
                     const err = await response.json();
-                    alert(err.error || '삭제 실패');
+                    alert(err.error || '실패');
                 }
-            } catch (error) {
-                alert('서버 연결 실패');
-            }
+            } catch (e) { alert('서버 오류'); }
         }
         
-        // 유틸리티
         function formatDate(timestamp) {
             const d = new Date(timestamp);
             return `2076.${String(d.getMonth()+1).padStart(2,'0')}.${String(d.getDate()).padStart(2,'0')} ${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`;
