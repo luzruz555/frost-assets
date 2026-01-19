@@ -1,5 +1,5 @@
 // /functions/api/posts.js
-// D1 버전 - 글 목록 조회 + 글 작성
+// D1 버전 - 글 목록 조회 + 글 작성 + 개념글
 
 export async function onRequest(context) {
     const { request, env } = context;
@@ -41,8 +41,8 @@ async function handleSavePost(request, env, corsHeaders) {
         const { id, type, title, author, content, password, isNotice } = data;
 
         await env.FROST_DB.prepare(`
-            INSERT INTO posts (id, type, title, author, content, password, is_notice, created_at, comment_count)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, 0)
+            INSERT INTO posts (id, type, title, author, content, password, is_notice, created_at, comment_count, likes)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, 0, 0)
         `).bind(id, type, title, author, content, password, isNotice ? 1 : 0, Date.now()).run();
 
         return new Response(JSON.stringify({ success: true, id }), {
@@ -61,18 +61,48 @@ async function handleSavePost(request, env, corsHeaders) {
 async function handleGetPosts(url, env, corsHeaders) {
     try {
         const page = parseInt(url.searchParams.get('page')) || 1;
-        const limit = Math.min(parseInt(url.searchParams.get('limit')) || 15, 20);
+        const limit = Math.min(parseInt(url.searchParams.get('limit')) || 15, 50);
         const type = url.searchParams.get('type');
         const noticeOnly = url.searchParams.get('noticeOnly') === 'true';
+        const bestOnly = url.searchParams.get('bestOnly') === 'true';
 
         // 공지 조회
         const notices = await env.FROST_DB.prepare(`
-            SELECT id, type, title, author, is_notice as isNotice, created_at as createdAt, comment_count as commentCount
+            SELECT id, type, title, author, is_notice as isNotice, created_at as createdAt, comment_count as commentCount, likes
             FROM posts WHERE is_notice = 1 ORDER BY created_at DESC
         `).all();
 
+        // 개념글 (추천 10개 이상)
+        if (bestOnly) {
+            const bestPosts = await env.FROST_DB.prepare(`
+                SELECT id, type, title, author, is_notice as isNotice, created_at as createdAt, comment_count as commentCount, likes
+                FROM posts WHERE is_notice = 0 AND likes >= 10 ORDER BY likes DESC, created_at DESC LIMIT 50
+            `).all();
+
+            return new Response(JSON.stringify({
+                posts: bestPosts.results.map(p => ({ ...p, isNotice: false })),
+                total: bestPosts.results.length,
+                page: 1,
+                totalPages: 1
+            }), {
+                headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+            });
+        }
+
+        // 공지만 요청한 경우
+        if (noticeOnly) {
+            return new Response(JSON.stringify({
+                posts: notices.results.map(p => ({ ...p, isNotice: true })),
+                total: notices.results.length,
+                page: 1,
+                totalPages: 1
+            }), {
+                headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+            });
+        }
+
         // 일반 글 조회
-        let query = `SELECT id, type, title, author, is_notice as isNotice, created_at as createdAt, comment_count as commentCount FROM posts WHERE is_notice = 0`;
+        let query = `SELECT id, type, title, author, is_notice as isNotice, created_at as createdAt, comment_count as commentCount, likes FROM posts WHERE is_notice = 0`;
         const params = [];
 
         if (type) {
@@ -96,18 +126,6 @@ async function handleGetPosts(url, env, corsHeaders) {
         const postsResult = await env.FROST_DB.prepare(query).bind(...params).all();
 
         const totalPages = Math.ceil(total / limit);
-
-        // 공지만 요청한 경우
-        if (noticeOnly) {
-            return new Response(JSON.stringify({
-                posts: notices.results.map(p => ({ ...p, isNotice: !!p.isNotice })),
-                total: notices.results.length,
-                page: 1,
-                totalPages: 1
-            }), {
-                headers: { ...corsHeaders, 'Content-Type': 'application/json' }
-            });
-        }
 
         // 1페이지면 공지 포함
         const posts = page === 1 
