@@ -3,141 +3,135 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FROST_COMMUNITY // 지상 네트워크</title>
+    <title>FROST_COMMUNITY // 지상 주민 네트워크</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;700&display=swap');
         
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
         
         body {
             font-family: 'IBM Plex Mono', monospace;
             background-color: #0a0a0a;
             color: #D4743C;
             min-height: 100vh;
+        }
+        
+        .hero {
+            height: 200px;
+            background: linear-gradient(180deg, rgba(10,10,10,0) 0%, rgba(10,10,10,1) 100%),
+                        url('home-bg.png') center/cover;
+            display: flex;
+            align-items: flex-end;
             padding: 20px;
         }
-        
-        .container {
-            max-width: 900px;
-            margin: 0 auto;
+        .hero-content h1 {
+            font-size: 24px;
+            font-weight: 700;
+            text-shadow: 0 0 20px rgba(212, 116, 60, 0.5);
         }
-        
-        .header {
-            border: 2px solid #D4743C;
-            padding: 15px 20px;
-            margin-bottom: 20px;
-        }
-        
-        .header h1 {
-            font-size: 14px;
-            font-weight: 500;
-        }
-        
-        .header .path {
-            color: #888;
+        .hero-content p {
             font-size: 12px;
+            color: #888;
             margin-top: 5px;
         }
         
-        .nav {
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .toolbar {
             display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
             gap: 10px;
-            margin-bottom: 20px;
+        }
+        
+        .tabs {
+            display: flex;
+            gap: 5px;
             flex-wrap: wrap;
         }
-        
-        .nav a {
-            color: #D4743C;
-            text-decoration: none;
-            padding: 8px 15px;
+        .tab {
+            background: transparent;
             border: 1px solid #333;
-            font-size: 12px;
+            color: #666;
+            padding: 8px 15px;
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 11px;
+            cursor: pointer;
             transition: all 0.2s;
         }
+        .tab:hover { border-color: #D4743C; color: #D4743C; }
+        .tab.active { border-color: #D4743C; color: #D4743C; background: rgba(212, 116, 60, 0.1); }
+        .tab.notice { border-color: #FFD700; color: #FFD700; }
+        .tab.notice.active { background: rgba(255, 215, 0, 0.1); }
+        .tab.best { border-color: #f472b6; color: #f472b6; }
+        .tab.best.active { background: rgba(244, 114, 182, 0.1); }
         
-        .nav a:hover, .nav a.active {
-            border-color: #D4743C;
-            background: rgba(212, 116, 60, 0.1);
+        .write-btn {
+            background: #D4743C;
+            border: none;
+            color: #0a0a0a;
+            padding: 10px 20px;
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 12px;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all 0.2s;
         }
+        .write-btn:hover { background: #e8854a; }
         
-        .nav a.notice-tab {
-            color: #FFD700;
-            border-color: #FFD700;
-        }
-        
-        .nav a.notice-tab:hover, .nav a.notice-tab.active {
-            background: rgba(255, 215, 0, 0.1);
-        }
-        
-        .terminal {
+        .post-list {
             border: 2px solid #D4743C;
             background: #0d0d0d;
         }
-        
-        .terminal-header {
+        .post-list-header {
             background: #D4743C;
             color: #0a0a0a;
-            padding: 8px 15px;
+            padding: 10px 15px;
             font-size: 12px;
-            display: flex;
-            justify-content: space-between;
-        }
-        
-        .terminal-body {
-            padding: 15px;
-        }
-        
-        .post-list {
-            list-style: none;
+            font-weight: 500;
         }
         
         .post-item {
-            display: grid;
-            grid-template-columns: 60px 1fr 100px 60px;
-            gap: 15px;
-            padding: 12px 10px;
-            border-bottom: 1px solid #222;
-            align-items: center;
+            display: flex;
+            padding: 12px 15px;
+            border-bottom: 1px solid #1a1a1a;
             transition: background 0.2s;
             cursor: pointer;
+            text-decoration: none;
+            color: inherit;
         }
-        
-        .post-item:hover {
-            background: rgba(212, 116, 60, 0.05);
-        }
-        
-        /* 공지 스타일 */
-        .post-item.notice {
-            background: rgba(255, 215, 0, 0.05);
-            border-left: 3px solid #FFD700;
-            padding-left: 7px;
-        }
-        
-        .post-item.notice:hover {
-            background: rgba(255, 215, 0, 0.1);
-        }
-        
-        .post-item.notice .post-title {
-            color: #FFD700;
-        }
+        .post-item:hover { background: #111; }
+        .post-item:last-child { border-bottom: none; }
         
         .post-type {
-            font-size: 11px;
-            padding: 3px 8px;
+            font-size: 10px;
+            padding: 2px 8px;
             border: 1px solid;
-            text-align: center;
+            margin-right: 10px;
+            flex-shrink: 0;
         }
-        
         .post-type.free { color: #888; border-color: #888; }
         .post-type.info { color: #4ade80; border-color: #4ade80; }
         .post-type.trade { color: #60a5fa; border-color: #60a5fa; }
         .post-type.help { color: #f472b6; border-color: #f472b6; }
-        .post-type.notice { color: #FFD700; border-color: #FFD700; background: rgba(255, 215, 0, 0.1); }
+        .post-type.notice {
+            color: #FFD700;
+            border-color: #FFD700;
+            background: rgba(255, 215, 0, 0.1);
+        }
+        .post-type.best {
+            color: #f472b6;
+            border-color: #f472b6;
+            background: rgba(244, 114, 182, 0.1);
+        }
         
+        .post-info { flex: 1; min-width: 0; }
         .post-title {
             font-size: 13px;
             color: #ccc;
@@ -145,78 +139,38 @@
             overflow: hidden;
             text-overflow: ellipsis;
         }
-        
-        .post-title:hover {
-            color: #D4743C;
-        }
-        
-        .post-author {
-            font-size: 11px;
-            color: #666;
-            text-align: right;
-        }
-        
-        .post-comments {
-            font-size: 11px;
-            color: #D4743C;
-            text-align: center;
-        }
-        
-        .empty-message {
-            text-align: center;
-            padding: 50px;
-            color: #666;
-            font-size: 12px;
+        .post-title .comment-count { color: #D4743C; font-size: 11px; margin-left: 5px; }
+        .post-title .like-count { color: #f472b6; font-size: 11px; margin-left: 5px; }
+        .post-meta {
+            font-size: 10px;
+            color: #555;
+            margin-top: 3px;
         }
         
         .pagination {
             display: flex;
             justify-content: center;
-            gap: 10px;
+            gap: 5px;
             margin-top: 20px;
         }
-        
-        .pagination button {
+        .page-btn {
             background: transparent;
             border: 1px solid #333;
-            color: #D4743C;
-            padding: 8px 15px;
+            color: #666;
+            padding: 8px 12px;
             font-family: 'IBM Plex Mono', monospace;
-            font-size: 12px;
+            font-size: 11px;
             cursor: pointer;
-            transition: all 0.2s;
         }
+        .page-btn:hover { border-color: #D4743C; color: #D4743C; }
+        .page-btn.active { border-color: #D4743C; color: #D4743C; background: rgba(212, 116, 60, 0.1); }
+        .page-btn:disabled { opacity: 0.3; cursor: not-allowed; }
         
-        .pagination button:hover:not(:disabled) {
-            border-color: #D4743C;
-        }
-        
-        .pagination button:disabled {
-            opacity: 0.3;
-            cursor: not-allowed;
-        }
-        
-        .pagination span {
-            padding: 8px 15px;
+        .empty-state {
+            text-align: center;
+            padding: 50px;
+            color: #444;
             font-size: 12px;
-        }
-        
-        .write-btn {
-            position: fixed;
-            bottom: 30px;
-            right: 30px;
-            background: #D4743C;
-            color: #0a0a0a;
-            border: none;
-            padding: 15px 20px;
-            font-family: 'IBM Plex Mono', monospace;
-            font-size: 12px;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-        
-        .write-btn:hover {
-            background: #e8854a;
         }
         
         .loading {
@@ -224,79 +178,68 @@
             padding: 50px;
             color: #666;
         }
+        @keyframes blink { 0%, 50% { opacity: 1; } 51%, 100% { opacity: 0; } }
+        .blink { animation: blink 1s infinite; }
         
-        @keyframes blink {
-            0%, 50% { opacity: 1; }
-            51%, 100% { opacity: 0; }
-        }
-        
-        .blink {
-            animation: blink 1s infinite;
-        }
-        
-        @media (max-width: 600px) {
-            .post-item {
-                grid-template-columns: 50px 1fr 50px;
-            }
-            .post-author {
-                display: none;
-            }
+        .footer {
+            text-align: center;
+            padding: 30px;
+            font-size: 10px;
+            color: #333;
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <div class="header">
-            <h1>FROST_COMMUNITY v2.1.7 // SURFACE_NETWORK</h1>
-            <div class="path">C:\FROST\COMMUNITY\HOME\</div>
-        </div>
-        
-        <nav class="nav">
-            <a href="#" class="active" data-type="">전체</a>
-            <a href="#" class="notice-tab" data-type="notice">공지</a>
-            <a href="#" data-type="free">자유</a>
-            <a href="#" data-type="info">정보</a>
-            <a href="#" data-type="trade">거래</a>
-            <a href="#" data-type="help">질문</a>
-        </nav>
-        
-        <div class="terminal">
-            <div class="terminal-header">
-                <span>POST_LIST.exe</span>
-                <span id="postCount">[0 ENTRIES]</span>
-            </div>
-            <div class="terminal-body">
-                <div class="loading" id="loading">LOADING<span class="blink">_</span></div>
-                <ul class="post-list" id="postList"></ul>
-                <div class="empty-message" id="emptyMessage" style="display:none;">
-                    등록된 글이 없습니다.<br>
-                    첫 번째 글을 작성해보세요.
-                </div>
-            </div>
-        </div>
-        
-        <div class="pagination" id="pagination" style="display:none;">
-            <button id="prevBtn" onclick="changePage(-1)">[ PREV ]</button>
-            <span id="pageInfo">1 / 1</span>
-            <button id="nextBtn" onclick="changePage(1)">[ NEXT ]</button>
+    <div class="hero">
+        <div class="hero-content">
+            <h1>FROST_COMMUNITY</h1>
+            <p>Surface Citizen Network v2.1.7 // 2076</p>
         </div>
     </div>
     
-    <button class="write-btn" onclick="location.href='write.html'">[ NEW_POST ]</button>
+    <div class="container">
+        <div class="toolbar">
+            <div class="tabs">
+                <button class="tab active" data-type="">전체</button>
+                <button class="tab notice" data-type="notice">공지</button>
+                <button class="tab best" data-type="best">개념글</button>
+                <button class="tab" data-type="free">자유</button>
+                <button class="tab" data-type="info">정보</button>
+                <button class="tab" data-type="trade">거래</button>
+                <button class="tab" data-type="help">질문</button>
+            </div>
+            <a href="write.html" class="write-btn">[ WRITE ]</a>
+        </div>
+        
+        <div class="post-list">
+            <div class="post-list-header">
+                POST_LIST.db // <span id="totalCount">0</span> entries
+            </div>
+            <div id="postListBody">
+                <div class="loading">LOADING<span class="blink">_</span></div>
+            </div>
+        </div>
+        
+        <div class="pagination" id="pagination"></div>
+    </div>
+    
+    <div class="footer">
+        FROST_COMMUNITY // Since 2071 // All survivors welcome
+    </div>
     
     <script>
         const API_URL = 'https://frostc.pages.dev';
-        let currentPage = 1;
-        let totalPages = 1;
-        let currentType = '';
         
-        // 카테고리 필터
-        document.querySelectorAll('.nav a').forEach(link => {
-            link.addEventListener('click', (e) => {
-                e.preventDefault();
-                document.querySelectorAll('.nav a').forEach(l => l.classList.remove('active'));
-                link.classList.add('active');
-                currentType = link.dataset.type;
+        let currentPage = 1;
+        let currentType = '';
+        let totalPages = 1;
+        
+        // 탭 이벤트
+        document.querySelectorAll('.tab').forEach(tab => {
+            tab.addEventListener('click', () => {
+                document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+                tab.classList.add('active');
+                currentType = tab.dataset.type;
                 currentPage = 1;
                 loadPosts();
             });
@@ -304,80 +247,113 @@
         
         // 글 목록 로드
         async function loadPosts() {
-            const loading = document.getElementById('loading');
-            const postList = document.getElementById('postList');
-            const emptyMessage = document.getElementById('emptyMessage');
-            const pagination = document.getElementById('pagination');
-            
-            loading.style.display = 'block';
-            postList.innerHTML = '';
-            emptyMessage.style.display = 'none';
+            const listBody = document.getElementById('postListBody');
+            listBody.innerHTML = '<div class="loading">LOADING<span class="blink">_</span></div>';
             
             try {
                 let url = `${API_URL}/api/posts?page=${currentPage}&limit=15`;
-                if (currentType && currentType !== 'notice') {
-                    url += `&type=${currentType}`;
-                }
+                
                 if (currentType === 'notice') {
-                    url += `&noticeOnly=true`;
+                    url += '&noticeOnly=true';
+                } else if (currentType === 'best') {
+                    url += '&bestOnly=true';
+                } else if (currentType) {
+                    url += `&type=${currentType}`;
                 }
                 
                 const response = await fetch(url);
                 const data = await response.json();
                 
-                loading.style.display = 'none';
+                document.getElementById('totalCount').textContent = data.total + (data.notices || 0);
+                totalPages = data.totalPages || 1;
                 
-                // 공지 탭이면 공지만 표시
-                let postsToShow = data.posts;
-                if (currentType === 'notice') {
-                    postsToShow = data.posts.filter(p => p.isNotice);
-                }
-                
-                if (postsToShow.length === 0) {
-                    emptyMessage.style.display = 'block';
-                    pagination.style.display = 'none';
-                    document.getElementById('postCount').textContent = '[0 ENTRIES]';
+                if (data.posts.length === 0) {
+                    listBody.innerHTML = '<div class="empty-state">게시글이 없습니다.</div>';
+                    document.getElementById('pagination').innerHTML = '';
                     return;
                 }
                 
-                totalPages = data.totalPages || 1;
-                const totalCount = currentType === 'notice' 
-                    ? postsToShow.length 
-                    : data.total + (data.notices || 0);
-                document.getElementById('postCount').textContent = `[${totalCount} ENTRIES]`;
-                document.getElementById('pageInfo').textContent = `${currentPage} / ${totalPages}`;
-                document.getElementById('prevBtn').disabled = currentPage <= 1;
-                document.getElementById('nextBtn').disabled = currentPage >= totalPages;
-                pagination.style.display = (totalPages > 1 && currentType !== 'notice') ? 'flex' : 'none';
-                
-                postsToShow.forEach(post => {
-                    const li = document.createElement('li');
-                    li.className = 'post-item' + (post.isNotice ? ' notice' : '');
-                    li.onclick = () => location.href = `post.html?id=${post.id}`;
-                    
+                listBody.innerHTML = data.posts.map(post => {
                     const typeLabel = { free: '자유', info: '정보', trade: '거래', help: '질문' };
-                    const displayType = post.isNotice ? '공지' : (typeLabel[post.type] || post.type);
-                    const typeClass = post.isNotice ? 'notice' : post.type;
+                    let displayType, typeClass;
                     
-                    li.innerHTML = `
-                        <span class="post-type ${typeClass}">${displayType}</span>
-                        <span class="post-title">${escapeHtml(post.title)}</span>
-                        <span class="post-author">${escapeHtml(post.author)}</span>
-                        <span class="post-comments">[${post.commentCount || 0}]</span>
+                    if (post.isNotice) {
+                        displayType = '공지';
+                        typeClass = 'notice';
+                    } else if (post.likes >= 10) {
+                        displayType = '개념';
+                        typeClass = 'best';
+                    } else {
+                        displayType = typeLabel[post.type] || post.type;
+                        typeClass = post.type;
+                    }
+                    
+                    return `
+                        <a href="post.html?id=${post.id}" class="post-item">
+                            <span class="post-type ${typeClass}">${displayType}</span>
+                            <div class="post-info">
+                                <div class="post-title">
+                                    ${escapeHtml(post.title)}
+                                    ${post.commentCount > 0 ? `<span class="comment-count">[${post.commentCount}]</span>` : ''}
+                                    ${post.likes > 0 ? `<span class="like-count">♥${post.likes}</span>` : ''}
+                                </div>
+                                <div class="post-meta">
+                                    ${formatAuthor(post.author)} · ${formatDate(post.createdAt)}
+                                </div>
+                            </div>
+                        </a>
                     `;
-                    
-                    postList.appendChild(li);
-                });
+                }).join('');
+                
+                renderPagination();
                 
             } catch (error) {
-                console.error('Error:', error);
-                loading.innerHTML = 'ERROR: 데이터를 불러올 수 없습니다.';
+                listBody.innerHTML = `<div class="empty-state">오류: ${error.message}</div>`;
             }
         }
         
-        function changePage(delta) {
-            currentPage += delta;
+        // 페이지네이션 렌더링
+        function renderPagination() {
+            const pagination = document.getElementById('pagination');
+            
+            if (totalPages <= 1) {
+                pagination.innerHTML = '';
+                return;
+            }
+            
+            let html = '';
+            
+            html += `<button class="page-btn" onclick="goToPage(${currentPage - 1})" ${currentPage === 1 ? 'disabled' : ''}>&lt;</button>`;
+            
+            const startPage = Math.max(1, currentPage - 2);
+            const endPage = Math.min(totalPages, currentPage + 2);
+            
+            for (let i = startPage; i <= endPage; i++) {
+                html += `<button class="page-btn ${i === currentPage ? 'active' : ''}" onclick="goToPage(${i})">${i}</button>`;
+            }
+            
+            html += `<button class="page-btn" onclick="goToPage(${currentPage + 1})" ${currentPage === totalPages ? 'disabled' : ''}>&gt;</button>`;
+            
+            pagination.innerHTML = html;
+        }
+        
+        function goToPage(page) {
+            if (page < 1 || page > totalPages) return;
+            currentPage = page;
             loadPosts();
+            window.scrollTo(0, 0);
+        }
+        
+        function formatDate(timestamp) {
+            const d = new Date(timestamp);
+            const now = new Date();
+            const diff = now - d;
+            
+            if (diff < 60000) return '방금';
+            if (diff < 3600000) return `${Math.floor(diff / 60000)}분 전`;
+            if (diff < 86400000) return `${Math.floor(diff / 3600000)}시간 전`;
+            
+            return `2076.${String(d.getMonth()+1).padStart(2,'0')}.${String(d.getDate()).padStart(2,'0')}`;
         }
         
         function escapeHtml(text) {
@@ -386,7 +362,13 @@
             return div.innerHTML;
         }
         
-        // 초기 로드
+        function formatAuthor(author) {
+            if (author === '겁많은두더지') {
+                return '<span style="background:#D4743C;color:#0a0a0a;padding:1px 4px;font-size:8px;margin-right:3px;">ADMIN</span>' + escapeHtml(author);
+            }
+            return escapeHtml(author);
+        }
+        
         loadPosts();
     </script>
 </body>
